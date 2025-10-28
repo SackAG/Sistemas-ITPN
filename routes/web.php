@@ -24,8 +24,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
-
-// Ruta para guardar el tema (accesible para todos)
 Route::post('/api/settings/theme', function (Request $request) {
     $theme = $request->input('theme', 'light');
     if (in_array($theme, ['light', 'dark'])) {
@@ -34,6 +32,5 @@ Route::post('/api/settings/theme', function (Request $request) {
     }
     return redirect()->back()->withErrors(['theme' => 'Tema inválido']);
 })->name('api.theme');
-
 
 require __DIR__ . '/auth.php';

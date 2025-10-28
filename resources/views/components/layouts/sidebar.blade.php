@@ -14,6 +14,27 @@
                     <i class="bi bi-grid me-2"></i> Dashboard
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" href="#">
+                    <i class="bi bi-people me-2"></i> Asistencia
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" href="#">
+                    <i class="bi bi-box-seam me-2"></i> Inventario
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" href="#">
+                    <i class="bi bi-graph-up me-2"></i> Reportes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center {{ request()->routeIs('settings.*') ? 'active' : '' }}"
+                    wire:navigate href="{{ route('settings.profile') }}">
+                    <i class="bi bi-gear me-2"></i> Configuración
+                </a>
+            </li>
         </ul>
     </div>
 

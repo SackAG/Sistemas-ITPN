@@ -22,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'rol',
+        'no_ctrl',
+        'carrera_id',
     ];
 
     /**
@@ -56,5 +59,48 @@ class User extends Authenticatable
             ->explode(' ')
             ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    // Relaciones
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class);
+    }
+
+    public function gruposComoProfesor()
+    {
+        return $this->hasMany(Grupo::class, 'profesor_id');
+    }
+
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class, 'grupo_alumno', 'alumno_id', 'grupo_id')
+                    ->withPivot('fecha_inscripcion', 'activo')
+                    ->withTimestamps();
+    }
+
+    public function equiposPersonales()
+    {
+        return $this->hasMany(Equipo::class, 'propietario_id');
+    }
+
+    public function asistencias()
+    {
+        return $this->hasMany(Asistencia::class, 'alumno_id');
+    }
+
+    public function usosLibres()
+    {
+        return $this->hasMany(UsoLibreEquipo::class, 'alumno_id');
+    }
+
+    public function reservaciones()
+    {
+        return $this->hasMany(ReservacionEquipo::class, 'alumno_id');
+    }
+
+    public function historialUsos()
+    {
+        return $this->hasMany(HistorialUsoAula::class, 'usuario_id');
     }
 }
