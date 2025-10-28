@@ -9,6 +9,7 @@ use App\Models\Equipo;
 use App\Models\Materia;
 use App\Models\Grupo;
 use App\Models\Tema;
+use App\Models\AsignacionAula;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -56,6 +57,14 @@ class DatabaseCompleteSeeder extends Seeder
         $profesor2 = User::create([
             'name' => 'Ing. María González',
             'email' => 'maria.gonzalez@tecnm.mx',
+            'password' => Hash::make('profesor123'),
+            'rol' => 'profesor',
+            'carrera_id' => $isc->id,
+        ]);
+
+        $profesor3 = User::create([
+            'name' => 'M.C. Carlos Ramírez',
+            'email' => 'carlos.ramirez@tecnm.mx',
             'password' => Hash::make('profesor123'),
             'rol' => 'profesor',
             'carrera_id' => $isc->id,
@@ -147,19 +156,41 @@ class DatabaseCompleteSeeder extends Seeder
             'activo' => true,
         ]);
 
-        // 6. Crear Temas
-        $temasProg = [
-            ['numero_tema' => 1, 'nombre' => 'Introducción a la programación', 'descripcion' => 'Conceptos básicos'],
-            ['numero_tema' => 2, 'nombre' => 'Variables y tipos de datos', 'descripcion' => 'Tipos de datos primitivos'],
-            ['numero_tema' => 3, 'nombre' => 'Estructuras de control', 'descripcion' => 'If, while, for'],
-            ['numero_tema' => 4, 'nombre' => 'Funciones', 'descripcion' => 'Definición y uso de funciones'],
+        // 6. Crear Temas para cada materia
+        // Temas de Programación I
+        $temasProgramacion = [
+            ['numero_tema' => 1, 'nombre' => 'Introducción a la programación', 'descripcion' => 'Conceptos básicos de programación y algoritmos'],
+            ['numero_tema' => 2, 'nombre' => 'Variables y tipos de datos', 'descripcion' => 'Tipos de datos primitivos y declaración de variables'],
+            ['numero_tema' => 3, 'nombre' => 'Estructuras de control', 'descripcion' => 'Condicionales (if, switch) y ciclos (for, while)'],
         ];
 
-        foreach ($temasProg as $tema) {
+        foreach ($temasProgramacion as $tema) {
             Tema::create(array_merge($tema, ['materia_id' => $materiasProgramacion->id]));
         }
 
-        // 7. Crear Grupos
+        // Temas de Bases de Datos
+        $temasBD = [
+            ['numero_tema' => 1, 'nombre' => 'Modelo Entidad-Relación', 'descripcion' => 'Diseño conceptual de bases de datos'],
+            ['numero_tema' => 2, 'nombre' => 'SQL Básico', 'descripcion' => 'Consultas SELECT, INSERT, UPDATE, DELETE'],
+            ['numero_tema' => 3, 'nombre' => 'Normalización', 'descripcion' => 'Formas normales y optimización de bases de datos'],
+        ];
+
+        foreach ($temasBD as $tema) {
+            Tema::create(array_merge($tema, ['materia_id' => $materiasBD->id]));
+        }
+
+        // Temas de Redes
+        $temasRedes = [
+            ['numero_tema' => 1, 'nombre' => 'Modelo OSI', 'descripcion' => 'Capas del modelo OSI y sus funciones'],
+            ['numero_tema' => 2, 'nombre' => 'Protocolo TCP/IP', 'descripcion' => 'Funcionamiento de TCP/IP y direccionamiento IP'],
+            ['numero_tema' => 3, 'nombre' => 'Configuración de redes', 'descripcion' => 'Subnetting y configuración de equipos de red'],
+        ];
+
+        foreach ($temasRedes as $tema) {
+            Tema::create(array_merge($tema, ['materia_id' => $materiasRedes->id]));
+        }
+
+        // 7. Crear Grupos (3 grupos con diferentes materias)
         $grupo1 = Grupo::create([
             'materia_id' => $materiasProgramacion->id,
             'profesor_id' => $profesor1->id,
@@ -178,18 +209,107 @@ class DatabaseCompleteSeeder extends Seeder
             'activo' => true,
         ]);
 
-        // 8. Inscribir alumnos a grupos
+        $grupo3 = Grupo::create([
+            'materia_id' => $materiasRedes->id,
+            'profesor_id' => $profesor3->id,
+            'clave_grupo' => 'A',
+            'periodo' => 'Ago-Dic',
+            'año' => 2025,
+            'activo' => true,
+        ]);
+
+        // 8. Crear Asignaciones de Aula (cada grupo en diferente aula y horario)
+        // Programación I - Lunes y Miércoles 7:00-9:00 - Lab 1
+        AsignacionAula::create([
+            'aula_id' => $aulas[0]->id, // Lab 1
+            'grupo_id' => $grupo1->id,
+            'dia_semana' => 'lunes',
+            'hora_inicio' => '07:00:00',
+            'hora_fin' => '09:00:00',
+            'fecha_inicio_vigencia' => now()->startOfMonth(),
+            'fecha_fin_vigencia' => now()->addMonths(4)->endOfMonth(),
+            'activo' => true,
+        ]);
+
+        AsignacionAula::create([
+            'aula_id' => $aulas[0]->id, // Lab 1
+            'grupo_id' => $grupo1->id,
+            'dia_semana' => 'miercoles',
+            'hora_inicio' => '07:00:00',
+            'hora_fin' => '09:00:00',
+            'fecha_inicio_vigencia' => now()->startOfMonth(),
+            'fecha_fin_vigencia' => now()->addMonths(4)->endOfMonth(),
+            'activo' => true,
+        ]);
+
+        // Bases de Datos - Martes y Jueves 9:00-11:00 - Lab 2
+        AsignacionAula::create([
+            'aula_id' => $aulas[1]->id, // Lab 2
+            'grupo_id' => $grupo2->id,
+            'dia_semana' => 'martes',
+            'hora_inicio' => '09:00:00',
+            'hora_fin' => '11:00:00',
+            'fecha_inicio_vigencia' => now()->startOfMonth(),
+            'fecha_fin_vigencia' => now()->addMonths(4)->endOfMonth(),
+            'activo' => true,
+        ]);
+
+        AsignacionAula::create([
+            'aula_id' => $aulas[1]->id, // Lab 2
+            'grupo_id' => $grupo2->id,
+            'dia_semana' => 'jueves',
+            'hora_inicio' => '09:00:00',
+            'hora_fin' => '11:00:00',
+            'fecha_inicio_vigencia' => now()->startOfMonth(),
+            'fecha_fin_vigencia' => now()->addMonths(4)->endOfMonth(),
+            'activo' => true,
+        ]);
+
+        // Redes - Miércoles y Viernes 11:00-13:00 - Lab 3
+        AsignacionAula::create([
+            'aula_id' => $aulas[2]->id, // Lab 3
+            'grupo_id' => $grupo3->id,
+            'dia_semana' => 'miercoles',
+            'hora_inicio' => '11:00:00',
+            'hora_fin' => '13:00:00',
+            'fecha_inicio_vigencia' => now()->startOfMonth(),
+            'fecha_fin_vigencia' => now()->addMonths(4)->endOfMonth(),
+            'activo' => true,
+        ]);
+
+        AsignacionAula::create([
+            'aula_id' => $aulas[2]->id, // Lab 3
+            'grupo_id' => $grupo3->id,
+            'dia_semana' => 'viernes',
+            'hora_inicio' => '11:00:00',
+            'hora_fin' => '13:00:00',
+            'fecha_inicio_vigencia' => now()->startOfMonth(),
+            'fecha_fin_vigencia' => now()->addMonths(4)->endOfMonth(),
+            'activo' => true,
+        ]);
+
+        // 9. Inscribir alumnos a grupos
         foreach ($alumnos as $index => $alumno) {
             if ($alumno->carrera_id === $isc->id) {
-                // Inscribir a Programación I
-                $grupo1->alumnos()->attach($alumno->id, [
-                    'fecha_inscripcion' => now()->subDays(30),
-                    'activo' => true,
-                ]);
-
-                // Algunos también a BD
+                // Inscribir a Programación I (primeros 10 alumnos)
                 if ($index < 10) {
+                    $grupo1->alumnos()->attach($alumno->id, [
+                        'fecha_inscripcion' => now()->subDays(30),
+                        'activo' => true,
+                    ]);
+                }
+
+                // Inscribir a Bases de Datos (alumnos 5-14)
+                if ($index >= 5 && $index < 15) {
                     $grupo2->alumnos()->attach($alumno->id, [
+                        'fecha_inscripcion' => now()->subDays(30),
+                        'activo' => true,
+                    ]);
+                }
+
+                // Inscribir a Redes (últimos 8 alumnos de ISC)
+                if ($index >= 7 && $index < 15) {
+                    $grupo3->alumnos()->attach($alumno->id, [
                         'fecha_inscripcion' => now()->subDays(30),
                         'activo' => true,
                     ]);
@@ -198,8 +318,22 @@ class DatabaseCompleteSeeder extends Seeder
         }
 
         $this->command->info('✅ Base de datos poblada exitosamente!');
-        $this->command->info('📧 Admin: admin@tecnm.mx / admin123');
-        $this->command->info('👨‍🏫 Profesor: juan.perez@tecnm.mx / profesor123');
+        $this->command->info('');
+        $this->command->info('📧 CREDENCIALES DE ACCESO:');
+        $this->command->info('👑 Admin: admin@tecnm.mx / admin123');
+        $this->command->info('👨‍🏫 Profesor 1: juan.perez@tecnm.mx / profesor123');
+        $this->command->info('👨‍🏫 Profesor 2: maria.gonzalez@tecnm.mx / profesor123');
+        $this->command->info('👨‍🏫 Profesor 3: carlos.ramirez@tecnm.mx / profesor123');
         $this->command->info('👨‍🎓 Alumno: alumno1@tecnm.mx / alumno123');
+        $this->command->info('');
+        $this->command->info('📊 DATOS CREADOS:');
+        $this->command->info('- 5 Carreras');
+        $this->command->info('- 23 Usuarios (1 admin, 3 profesores, 20 alumnos)');
+        $this->command->info('- 15 Aulas en 3 edificios');
+        $this->command->info('- ~315 Equipos (computadoras, proyectores)');
+        $this->command->info('- 3 Materias (Programación, BD, Redes)');
+        $this->command->info('- 9 Temas (3 por materia)');
+        $this->command->info('- 3 Grupos activos');
+        $this->command->info('- 6 Asignaciones de aula (2 días por grupo)');
     }
 }

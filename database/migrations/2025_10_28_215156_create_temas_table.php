@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('nombre');
             $table->text('descripcion')->nullable();
             $table->timestamps();
+            
+            // Índice compuesto para ordenar temas por materia
+            $table->index(['materia_id', 'numero_tema']);
         });
     }
 

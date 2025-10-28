@@ -12,8 +12,9 @@ class SesionClaseObserver
      */
     public function created(SesionClase $sesionClase): void
     {
-        // Obtener el aula desde la asignación
+        // Obtener el aula y materia desde la asignación
         $asignacion = $sesionClase->asignacionAula;
+        $materia = $asignacion->grupo->materia;
         
         // Crear automáticamente registro en historial_uso_aulas
         HistorialUsoAula::create([
@@ -25,7 +26,7 @@ class SesionClaseObserver
             'usuario_id' => $sesionClase->profesor_id,
             'grupo_id' => $asignacion->grupo_id,
             'sesion_clase_id' => $sesionClase->id,
-            'descripcion' => "Sesión de clase: {$sesionClase->tipo_actividad}",
+            'descripcion' => "Clase de {$materia->nombre} - {$sesionClase->tipo_actividad}",
         ]);
     }
 

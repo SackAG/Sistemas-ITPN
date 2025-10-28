@@ -23,6 +23,10 @@ return new class extends Migration
             $table->boolean('activo')->default(true);
             $table->timestamps();
             
+            // Índices para consultas de horarios
+            $table->index(['aula_id', 'dia_semana', 'activo']);
+            $table->index('grupo_id');
+            
             // Constraint único para evitar conflictos de horario en un aula
             $table->unique(['aula_id', 'dia_semana', 'hora_inicio', 'fecha_inicio_vigencia'], 'unique_aula_horario');
         });

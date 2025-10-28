@@ -26,6 +26,11 @@ return new class extends Migration
             $table->date('fecha_adquisicion')->nullable();
             $table->text('observaciones')->nullable();
             $table->timestamps();
+            
+            // Índices para mejorar consultas
+            $table->index(['aula_id', 'estado']);
+            $table->index(['tipo', 'estado']);
+            $table->index('propiedad');
         });
     }
 

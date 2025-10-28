@@ -20,8 +20,8 @@ class Asistencia extends Model
     protected $casts = [
         'asistio' => 'boolean',
         'uso_equipo_personal' => 'boolean',
-        'hora_entrada' => 'datetime:H:i:s',
-        'hora_salida' => 'datetime:H:i:s',
+        'hora_entrada' => 'datetime:H:i',
+        'hora_salida' => 'datetime:H:i',
     ];
 
     // Relaciones

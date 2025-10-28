@@ -20,6 +20,11 @@ return new class extends Migration
             $table->integer('año')->unsigned();
             $table->boolean('activo')->default(true);
             $table->timestamps();
+            
+            // Índices para mejorar consultas
+            $table->index('materia_id');
+            $table->index('profesor_id');
+            $table->index(['activo', 'año']);
         });
     }
 

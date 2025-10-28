@@ -18,6 +18,10 @@ return new class extends Migration
             $table->date('fecha_inscripcion');
             $table->boolean('activo')->default(true);
             $table->timestamps();
+            
+            // Índices para consultas frecuentes (sin unique para permitir recursamiento)
+            $table->index('grupo_id');
+            $table->index('alumno_id');
         });
     }
 

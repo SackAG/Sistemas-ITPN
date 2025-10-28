@@ -24,6 +24,10 @@ return new class extends Migration
             $table->foreignId('grupo_id')->nullable()->constrained('grupos')->onDelete('set null');
             $table->timestamps();
             
+            // Índices para consultas de reservaciones
+            $table->index(['equipo_id', 'fecha_reservacion', 'estado']);
+            $table->index(['alumno_id', 'fecha_reservacion']);
+            
             // Constraint único para evitar dobles reservaciones del mismo equipo
             $table->unique(['equipo_id', 'fecha_reservacion', 'hora_inicio'], 'unique_reservacion_equipo');
         });

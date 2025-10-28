@@ -19,6 +19,9 @@ return new class extends Migration
             $table->integer('semestre')->unsigned();
             $table->boolean('activo')->default(true);
             $table->timestamps();
+            
+            // Índice para consultas por carrera
+            $table->index('carrera_id');
         });
     }
 

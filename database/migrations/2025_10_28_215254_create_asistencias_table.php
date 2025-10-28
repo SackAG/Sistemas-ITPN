@@ -22,6 +22,10 @@ return new class extends Migration
             $table->boolean('uso_equipo_personal')->default(false);
             $table->text('observaciones')->nullable();
             $table->timestamps();
+            
+            // Índices para consultas de asistencia
+            $table->index('sesion_clase_id');
+            $table->index(['alumno_id', 'sesion_clase_id']);
         });
     }
 

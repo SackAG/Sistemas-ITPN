@@ -21,8 +21,8 @@ class AsignacionAula extends Model
 
     protected $casts = [
         'activo' => 'boolean',
-        'hora_inicio' => 'datetime:H:i:s',
-        'hora_fin' => 'datetime:H:i:s',
+        'hora_inicio' => 'datetime:H:i',
+        'hora_fin' => 'datetime:H:i',
         'fecha_inicio_vigencia' => 'date',
         'fecha_fin_vigencia' => 'date',
     ];

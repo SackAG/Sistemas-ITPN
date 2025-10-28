@@ -20,8 +20,8 @@ class ReservacionEquipo extends Model
 
     protected $casts = [
         'fecha_reservacion' => 'date',
-        'hora_inicio' => 'datetime:H:i:s',
-        'hora_fin' => 'datetime:H:i:s',
+        'hora_inicio' => 'datetime:H:i',
+        'hora_fin' => 'datetime:H:i',
     ];
 
     // Relaciones

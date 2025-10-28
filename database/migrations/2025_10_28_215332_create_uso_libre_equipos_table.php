@@ -23,6 +23,10 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->foreignId('autorizado_por')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
+            
+            // Índices para consultas de uso libre
+            $table->index(['fecha_uso', 'alumno_id']);
+            $table->index(['equipo_id', 'fecha_uso']);
         });
     }
 

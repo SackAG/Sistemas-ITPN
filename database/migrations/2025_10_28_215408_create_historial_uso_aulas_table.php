@@ -26,6 +26,12 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->text('observaciones')->nullable();
             $table->timestamps();
+            
+            // Índices para consultas de historial
+            $table->index(['aula_id', 'fecha']);
+            $table->index('fecha');
+            $table->index('tipo_uso');
+            $table->index('usuario_id');
         });
     }
 

@@ -23,6 +23,11 @@ return new class extends Migration
             $table->foreignId('profesor_id')->constrained('users')->onDelete('cascade');
             $table->text('observaciones')->nullable();
             $table->timestamps();
+            
+            // Índices para consultas frecuentes
+            $table->index('fecha_sesion');
+            $table->index('asignacion_aula_id');
+            $table->index('profesor_id');
         });
     }
 

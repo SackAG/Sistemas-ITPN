@@ -22,14 +22,14 @@ class SesionClase extends Model
 
     protected $casts = [
         'fecha_sesion' => 'date',
-        'hora_inicio_real' => 'datetime:H:i:s',
-        'hora_fin_real' => 'datetime:H:i:s',
+        'hora_inicio_real' => 'datetime:H:i',
+        'hora_fin_real' => 'datetime:H:i',
     ];
 
     // Relaciones
     public function asignacionAula()
     {
-        return $this->belongsTo(AsignacionAula::class);
+        return $this->belongsTo(AsignacionAula::class, 'asignacion_aula_id');
     }
 
     public function tema()
@@ -49,6 +49,6 @@ class SesionClase extends Model
 
     public function historial()
     {
-        return $this->hasOne(HistorialUsoAula::class);
+        return $this->hasOne(HistorialUsoAula::class, 'sesion_clase_id');
     }
 }
