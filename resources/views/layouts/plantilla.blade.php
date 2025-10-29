@@ -118,9 +118,9 @@
                     <li class="nav-item">
                         <form action="{{ route('api.theme') }}" method="POST" style="display: inline;">
                             @csrf
-                            <input type="hidden" name="theme" value="{{ app('settings')['theme'] === 'dark' ? 'light' : 'dark' }}">
+                            <input type="hidden" name="theme" value="{{ \App\Models\Setting::get('theme', 'light') === 'dark' ? 'light' : 'dark' }}">
                             <button type="submit" class="theme-toggle" title="Cambiar tema">
-                                @if(app('settings')['theme'] === 'dark')
+                                @if(\App\Models\Setting::get('theme', 'light') === 'dark')
                                     <i class="bi bi-sun-fill"></i>
                                 @else
                                     <i class="bi bi-moon-stars-fill"></i>

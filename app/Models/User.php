@@ -61,6 +61,10 @@ class User extends Authenticatable
             ->implode('');
     }
 
+    protected $attributes = [
+        'rol' => 'alumno',
+    ];
+
     // Relaciones
     public function carrera()
     {

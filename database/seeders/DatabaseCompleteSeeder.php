@@ -43,6 +43,7 @@ class DatabaseCompleteSeeder extends Seeder
             'email' => 'admin@tecnm.mx',
             'password' => Hash::make('admin123'),
             'rol' => 'admin',
+            'email_verified_at' => now(),
         ]);
 
         // Profesores
@@ -52,6 +53,7 @@ class DatabaseCompleteSeeder extends Seeder
             'password' => Hash::make('profesor123'),
             'rol' => 'profesor',
             'carrera_id' => $isc->id,
+            'email_verified_at' => now(),
         ]);
 
         $profesor2 = User::create([
@@ -60,6 +62,7 @@ class DatabaseCompleteSeeder extends Seeder
             'password' => Hash::make('profesor123'),
             'rol' => 'profesor',
             'carrera_id' => $isc->id,
+            'email_verified_at' => now(),
         ]);
 
         $profesor3 = User::create([
@@ -68,6 +71,7 @@ class DatabaseCompleteSeeder extends Seeder
             'password' => Hash::make('profesor123'),
             'rol' => 'profesor',
             'carrera_id' => $isc->id,
+            'email_verified_at' => now(),
         ]);
 
         // Alumnos
@@ -80,6 +84,7 @@ class DatabaseCompleteSeeder extends Seeder
                 'rol' => 'alumno',
                 'no_ctrl' => '20' . str_pad($i, 6, '0', STR_PAD_LEFT),
                 'carrera_id' => $i <= 15 ? $isc->id : $ii->id,
+                'email_verified_at' => now(),
             ]);
         }
 
