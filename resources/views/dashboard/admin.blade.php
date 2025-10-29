@@ -93,7 +93,7 @@
         {{-- Enlaces de gestión --}}
         <div class="row g-4">
             <div class="col-md-3">
-                <a href="#" class="card text-decoration-none text-center">
+                <a href="{{ route('admin.aulas.index') }}" class="card text-decoration-none text-center">
                     <div class="card-body">
                         <i class="bi bi-building fs-1 text-primary mb-2"></i>
                         <p class="fw-semibold mb-0">Gestionar Aulas</p>

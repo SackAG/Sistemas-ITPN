@@ -4,6 +4,7 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Models\Setting;
+use App\Http\Controllers\Admin\AulaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -41,5 +42,10 @@ Route::post('/api/settings/theme', function (Request $request) {
 Route::get('/login-simple', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login.simple');
 Route::post('/login-simple', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login.post');
 Route::post('/logout-simple', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout.simple');
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // CRUD de Aulas
+    Route::resource('aulas', AulaController::class);
+});
 
 require __DIR__ . '/auth.php';
