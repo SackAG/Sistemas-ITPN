@@ -12,19 +12,11 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    /**
-     * Muestra el dashboard correspondiente según el rol del usuario.
-     * 
-     * - Admin: Estadísticas generales del sistema
-     * - Profesor: Sus grupos y últimas sesiones
-     * - Alumno: Sus grupos inscritos
-     */
+
     public function index()
     {
-        // Obtener el usuario autenticado
         $user = Auth::user();
 
-        // Verificar el rol y retornar la vista correspondiente
         switch ($user->rol) {
             case 'admin':
                 return $this->dashboardAdmin();
@@ -36,7 +28,7 @@ class DashboardController extends Controller
                 return $this->dashboardAlumno($user);
                 
             default:
-                // Si por alguna razón el rol no existe, cerrar sesión
+
                 Auth::logout();
                 return redirect()->route('login')
                     ->with('error', 'Tu cuenta no tiene un rol válido.');

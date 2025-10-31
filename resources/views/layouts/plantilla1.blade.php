@@ -21,8 +21,10 @@
             width: 280px;
             background-color: #ffffff;
             box-shadow: 2px 0 4px rgba(0,0,0,0.08);
-            padding: 1.5rem 0;
+            padding: 1.5rem 0 0 0;
             z-index: 1050;
+            display: flex;
+            flex-direction: column;
         }
         
         .sidebar-header {
@@ -39,7 +41,27 @@
         }
         
         .sidebar-nav {
-            padding: 0 1rem;
+            padding: 0 1rem 1rem 1rem;
+            overflow-y: auto;
+            flex: 1;
+            max-height: calc(100vh - 200px);
+        }
+        
+        .sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
         }
         
         .sidebar-nav .nav-link {
@@ -225,32 +247,199 @@
         
         <nav class="sidebar-nav">
             <ul class="nav flex-column">
+                {{-- Dashboard --}}
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('dashboard') }}">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <i class="bi bi-house-door"></i>
                         Dashboard
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-people"></i>
-                        Asistencia
-                    </a>
+
+                {{-- Menú para Administradores --}}
+                @if(auth()->user()->rol === 'admin')
+                    {{-- Sección: Gestión Académica --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Gestión Académica</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.carreras.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-mortarboard"></i>
+                            Carreras
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.materias.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-book"></i>
+                            Materias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.grupos.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-people-fill"></i>
+                            Grupos
+                        </a>
+                    </li>
+
+                    {{-- Sección: Infraestructura --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Infraestructura</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.aulas.*') ? 'active' : '' }}" href="{{ route('admin.aulas.index') }}">
+                            <i class="bi bi-building"></i>
+                            Aulas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.equipos.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-pc-display"></i>
+                            Equipos
+                        </a>
+                    </li>
+
+                    {{-- Sección: Asignaciones --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Asignaciones</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.asignaciones.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-calendar-week"></i>
+                            Horarios de Aulas
+                        </a>
+                    </li>
+
+                    {{-- Sección: Usuarios --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Usuarios</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-person-badge"></i>
+                            Gestión de Usuarios
+                        </a>
+                    </li>
+
+                    {{-- Sección: Reportes --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Reportes</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.reportes.asistencias') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-clipboard-data"></i>
+                            Reporte de Asistencias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.reportes.equipos') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-bar-chart"></i>
+                            Uso de Equipos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.reportes.aulas') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-pie-chart"></i>
+                            Ocupación de Aulas
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Menú para Profesores --}}
+                @if(auth()->user()->rol === 'profesor')
+                    {{-- Mis Clases --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Mis Clases</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profesor.grupos.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-people-fill"></i>
+                            Mis Grupos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profesor.horarios.*') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-calendar-week"></i>
+                            Mi Horario
+                        </a>
+                    </li>
+                    
+                    {{-- Asistencias --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Asistencias</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profesor.asistencias.tomar') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-clipboard-check"></i>
+                            Tomar Asistencia
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profesor.asistencias.historial') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-clock-history"></i>
+                            Historial de Asistencias
+                        </a>
+                    </li>
+
+                    {{-- Equipos --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Equipos</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profesor.equipos.reservar') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-calendar-plus"></i>
+                            Reservar Equipos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profesor.equipos.mis-reservaciones') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-list-check"></i>
+                            Mis Reservaciones
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Menú para Alumnos --}}
+                @if(auth()->user()->rol === 'alumno')
+                    {{-- Mi Información --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Mi Información</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('alumno.horario') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-calendar-week"></i>
+                            Mi Horario
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('alumno.asistencias') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-clipboard-data"></i>
+                            Mis Asistencias
+                        </a>
+                    </li>
+
+                    {{-- Equipos --}}
+                    <li class="nav-item mt-3">
+                        <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Equipos</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('alumno.equipos.solicitar') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-laptop"></i>
+                            Solicitar Uso Libre
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('alumno.equipos.mis-usos') ? 'active' : '' }}" href="#">
+                            <i class="bi bi-clock-history"></i>
+                            Mis Usos de Equipos
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Configuración (para todos) --}}
+                <li class="nav-item mt-3">
+                    <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Sistema</small>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-box-seam"></i>
-                        Inventario
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-graph-up"></i>
-                        Reportes
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('settings.profile') }}">
+                    <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.profile') }}">
                         <i class="bi bi-gear"></i>
                         Configuración
                     </a>
