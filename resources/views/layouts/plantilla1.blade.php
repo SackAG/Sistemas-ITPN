@@ -313,7 +313,7 @@
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Usuarios</small>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                             <i class="bi bi-person-badge"></i>
                             Gestión de Usuarios
                         </a>

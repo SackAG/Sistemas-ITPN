@@ -5,6 +5,7 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Models\Setting;
 use App\Http\Controllers\Admin\AulaController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -46,6 +47,13 @@ Route::post('/logout-simple', [App\Http\Controllers\Auth\LoginController::class,
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // CRUD de Aulas
     Route::resource('aulas', AulaController::class);
+    
+    // CRUD de Usuarios
+    Route::resource('users', UserController::class);
+    
+    // Ruta adicional para resetear contraseña
+    Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])
+        ->name('users.reset-password');
 });
 
 require __DIR__ . '/auth.php';

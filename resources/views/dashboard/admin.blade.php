@@ -117,7 +117,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="#" class="card text-decoration-none text-center">
+                <a href="{{ route('admin.users.index') }}" class="card text-decoration-none text-center">
                     <div class="card-body">
                         <i class="bi bi-person-badge fs-1 text-info mb-2"></i>
                         <p class="fw-semibold mb-0">Gestionar Usuarios</p>

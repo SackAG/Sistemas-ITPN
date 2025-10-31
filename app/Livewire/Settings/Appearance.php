@@ -6,7 +6,7 @@ use App\Models\Setting;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 
-#[Layout('components.layouts.app')]
+#[Layout('components.layouts.settings')]
 class Appearance extends Component
 {
     public $theme = 'light';
