@@ -271,3 +271,76 @@
         }
     </style>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const materiaSelect = document.getElementById('materia_id');
+            const profesorSelect = document.getElementById('profesor_id');
+            const profesorActual = {{ $grupo->profesor_id ?? 'null' }};
+
+            // Obtener datos de materias y profesores con sus carreras
+            const materias = @json($materias->map(function($m) {
+                return ['id' => $m->id, 'carrera_id' => $m->carrera_id];
+            }));
+            
+            const profesores = @json($profesores->map(function($p) {
+                return ['id' => $p->id, 'name' => $p->name, 'carrera_id' => $p->carrera_id];
+            }));
+
+            // Función para filtrar profesores según la carrera de la materia
+            function filtrarProfesores() {
+                const materiaId = materiaSelect.value;
+                
+                // Limpiar el select de profesores
+                profesorSelect.innerHTML = '<option value="">-- Selecciona un profesor --</option>';
+                
+                if (!materiaId) {
+                    profesorSelect.disabled = true;
+                    return;
+                }
+                
+                // Buscar la carrera de la materia seleccionada
+                const materiaSeleccionada = materias.find(m => m.id == materiaId);
+                
+                if (!materiaSeleccionada) {
+                    profesorSelect.disabled = true;
+                    return;
+                }
+                
+                // Filtrar profesores de la misma carrera
+                const profesoresFiltrados = profesores.filter(p => 
+                    p.carrera_id == materiaSeleccionada.carrera_id
+                );
+                
+                if (profesoresFiltrados.length === 0) {
+                    profesorSelect.innerHTML = '<option value="">No hay profesores disponibles para esta carrera</option>';
+                    profesorSelect.disabled = true;
+                    return;
+                }
+                
+                // Agregar profesores filtrados al select
+                profesoresFiltrados.forEach(profesor => {
+                    const option = document.createElement('option');
+                    option.value = profesor.id;
+                    option.textContent = profesor.name;
+                    
+                    // Seleccionar el profesor actual si existe
+                    if (profesorActual && profesor.id == profesorActual) {
+                        option.selected = true;
+                    }
+                    
+                    profesorSelect.appendChild(option);
+                });
+                
+                profesorSelect.disabled = false;
+            }
+
+            // Evento change en el select de materia
+            materiaSelect.addEventListener('change', filtrarProfesores);
+
+            // Ejecutar el filtrado al cargar la página para mostrar solo los profesores válidos
+            filtrarProfesores();
+        });
+    </script>
+@endpush

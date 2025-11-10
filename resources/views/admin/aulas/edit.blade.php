@@ -326,4 +326,59 @@
             background-color: #1a1d20 !important;
         }
     </style>
+    @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const materiaSelect = document.getElementById('materia_id');
+    const profesorSelect = document.getElementById('profesor_id');
+    const profesorActual = {{ $grupo->profesor_id }};
+    
+    const materias = @json($materias->map(function($m) {
+        return ['id' => $m->id, 'carrera_id' => $m->carrera_id];
+    }));
+    
+    const profesores = @json($profesores->map(function($p) {
+        return ['id' => $p->id, 'name' => $p->name, 'carrera_id' => $p->carrera_id];
+    }));
+    
+    function filtrarProfesores() {
+        const materiaId = materiaSelect.value;
+        
+        if (!materiaId) {
+            profesorSelect.disabled = true;
+            profesorSelect.innerHTML = '<option value="">Primero seleccione una materia...</option>';
+            return;
+        }
+        
+        const materia = materias.find(m => m.id == materiaId);
+        const carreraId = materia ? materia.carrera_id : null;
+        
+        const profesoresFiltrados = carreraId 
+            ? profesores.filter(p => p.carrera_id == carreraId)
+            : profesores;
+        
+        profesorSelect.disabled = false;
+        profesorSelect.innerHTML = '<option value="">Seleccionar profesor...</option>';
+        
+        if (profesoresFiltrados.length === 0) {
+            profesorSelect.innerHTML = '<option value="">No hay profesores de esta carrera</option>';
+            profesorSelect.disabled = true;
+        } else {
+            profesoresFiltrados.forEach(profesor => {
+                const option = document.createElement('option');
+                option.value = profesor.id;
+                option.textContent = profesor.name;
+                if (profesor.id == profesorActual) {
+                    option.selected = true;
+                }
+                profesorSelect.appendChild(option);
+            });
+        }
+    }
+    
+    filtrarProfesores();
+    materiaSelect.addEventListener('change', filtrarProfesores);
+});
+</script>
+@endpush
 @endsection

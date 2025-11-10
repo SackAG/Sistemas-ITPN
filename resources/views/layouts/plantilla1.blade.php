@@ -491,5 +491,6 @@
             @yield('contenido')
         </div>
     </div>
+    @stack('scripts')
 </body>
 </html>

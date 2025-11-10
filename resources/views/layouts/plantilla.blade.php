@@ -151,5 +151,6 @@
             <p class="mb-0 text-muted">© 2025 Control de Asistencia e Inventario. Todos los derechos reservados.</p>
         </div>
     </footer>
+    @stack('scripts')
 </body>
 </html>

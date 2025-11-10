@@ -139,6 +139,22 @@ class GrupoController extends Controller
                 ->withInput();
         }
 
+        // Verificar que el profesor tenga una carrera asignada
+        if (!$profesor->carrera_id) {
+            return back()->withErrors(['profesor_id' => 'El profesor seleccionado no tiene un departamento/carrera asignado.'])
+                ->withInput();
+        }
+
+        // Obtener la materia y verificar que coincida con la carrera del profesor
+        $materia = Materia::find($validated['materia_id']);
+        if ($profesor->carrera_id !== $materia->carrera_id) {
+            $carreraProfesor = $profesor->carrera->nombre;
+            $carreraMateria = $materia->carrera->nombre;
+            return back()->withErrors([
+                'profesor_id' => "El profesor pertenece a {$carreraProfesor} pero la materia es de {$carreraMateria}. Solo se pueden asignar profesores del mismo departamento."
+            ])->withInput();
+        }
+
         // Si no se envió activo, establecer como false (checkbox desmarcado)
         $validated['activo'] = $request->has('activo');
 
@@ -202,6 +218,22 @@ class GrupoController extends Controller
                 ->withInput();
         }
 
+        // Verificar que el profesor tenga una carrera asignada
+        if (!$profesor->carrera_id) {
+            return back()->withErrors(['profesor_id' => 'El profesor seleccionado no tiene un departamento/carrera asignado.'])
+                ->withInput();
+        }
+
+        // Obtener la materia y verificar que coincida con la carrera del profesor
+        $materia = Materia::find($validated['materia_id']);
+        if ($profesor->carrera_id !== $materia->carrera_id) {
+            $carreraProfesor = $profesor->carrera->nombre;
+            $carreraMateria = $materia->carrera->nombre;
+            return back()->withErrors([
+                'profesor_id' => "El profesor pertenece a {$carreraProfesor} pero la materia es de {$carreraMateria}. Solo se pueden asignar profesores del mismo departamento."
+            ])->withInput();
+        }
+
         // Si no se envió activo, establecer como false (checkbox desmarcado)
         $validated['activo'] = $request->has('activo');
 
@@ -249,12 +281,12 @@ class GrupoController extends Controller
             // Cargar el grupo con sus relaciones
             $grupo = Grupo::with(['alumnos.carrera', 'materia', 'profesor'])->findOrFail($id);
 
-            // Obtener alumnos disponibles para agregar (que NO están en este grupo)
             $alumnosDisponibles = User::where('rol', 'alumno')
-                ->whereNotIn('id', $grupo->alumnos->pluck('id'))
-                ->with('carrera')
-                ->orderBy('name')
-                ->get();
+    ->where('carrera_id', $grupo->materia->carrera_id) // ← NUEVA LÍNEA
+    ->whereNotIn('id', $grupo->alumnos->pluck('id'))
+    ->with('carrera')
+    ->orderBy('name')
+    ->get();
 
             return view('admin.grupos.alumnos', compact('grupo', 'alumnosDisponibles'));
         } catch (\Exception $e) {
@@ -293,6 +325,22 @@ class GrupoController extends Controller
             if ($grupo->alumnos()->where('alumno_id', $alumno->id)->exists()) {
                 return back()->with('error', 'El alumno ya está inscrito en este grupo.');
             }
+
+            // Verificar que el alumno tenga una carrera asignada
+if (!$alumno->carrera_id) {
+    return back()->with('error', 'El alumno seleccionado no tiene una carrera asignada.');
+}
+
+// Verificar que la carrera del alumno coincida con la carrera de la materia
+$materiaCarreraId = $grupo->materia->carrera_id;
+if ($alumno->carrera_id !== $materiaCarreraId) {
+    $carreraAlumno = $alumno->carrera->nombre;
+    $carreraMateria = $grupo->materia->carrera->nombre;
+    return back()->with('error', 
+        "El alumno pertenece a {$carreraAlumno} pero la materia es de {$carreraMateria}. " .
+        "Solo se pueden inscribir alumnos de la misma carrera."
+    );
+}
 
             // Agregar el alumno al grupo
             $grupo->alumnos()->attach($alumno->id, [
