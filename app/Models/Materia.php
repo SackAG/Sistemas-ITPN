@@ -11,6 +11,7 @@ class Materia extends Model
         'clave',
         'carrera_id',
         'semestre',
+        'descripcion',
         'activo',
     ];
 

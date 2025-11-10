@@ -127,6 +127,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        // return $user;
         $carreras = Carrera::orderBy('nombre')->get();
         return view('admin.users.edit', compact('user', 'carreras'));
     }

@@ -240,8 +240,9 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="{{ route('dashboard') }}" class="sidebar-brand">
-                <i class="bi bi-boxes me-2"></i>Ctrl AsisEinv
+            <a class="navbar-brand d-flex align-items-center justify-content-center" href="#">
+                <img src="{{ asset('images/logo-navbar-png.png') }}" alt="Logo" style="width: 100%; height: auto; max-width: 260px;">
+                {{-- <span>Control de Asistencia</span> --}}
             </a>
         </div>
         
@@ -262,13 +263,13 @@
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Gestión Académica</small>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.carreras.*') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.carreras.*') ? 'active' : '' }}" href="{{ route('admin.carreras.index') }}">
                             <i class="bi bi-mortarboard"></i>
                             Carreras
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.materias.*') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.materias.*') ? 'active' : '' }}" href="{{ route('admin.materias.index') }}">
                             <i class="bi bi-book"></i>
                             Materias
                         </a>

@@ -103,7 +103,10 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">Bienvenidos</a>
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="{{ asset('images/logo-navbar-png.png') }}" alt="Logo" style="height: auto; width: 100%; max-width: 250px; max-height: 50px;" class="me-2">
+                <span>Academi-Track</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
