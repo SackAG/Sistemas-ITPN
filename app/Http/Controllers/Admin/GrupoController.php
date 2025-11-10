@@ -236,4 +236,142 @@ class GrupoController extends Controller
         return redirect()->route('admin.grupos.index')
             ->with('success', 'Grupo eliminado exitosamente.');
     }
+
+    /**
+     * Display the students of a specific group.
+     * 
+     * @param  int  $id
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function alumnos($id)
+    {
+        try {
+            // Cargar el grupo con sus relaciones
+            $grupo = Grupo::with(['alumnos.carrera', 'materia', 'profesor'])->findOrFail($id);
+
+            // Obtener alumnos disponibles para agregar (que NO están en este grupo)
+            $alumnosDisponibles = User::where('rol', 'alumno')
+                ->whereNotIn('id', $grupo->alumnos->pluck('id'))
+                ->with('carrera')
+                ->orderBy('name')
+                ->get();
+
+            return view('admin.grupos.alumnos', compact('grupo', 'alumnosDisponibles'));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.grupos.index')
+                ->with('error', 'Error al cargar los alumnos del grupo: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Add a student to a group.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function agregarAlumno(Request $request, $id)
+    {
+        try {
+            // Validar la solicitud
+            $validated = $request->validate([
+                'alumno_id' => 'required|exists:users,id',
+            ], [
+                'alumno_id.required' => 'Debe seleccionar un alumno.',
+                'alumno_id.exists' => 'El alumno seleccionado no existe.',
+            ]);
+
+            $grupo = Grupo::findOrFail($id);
+            $alumno = User::findOrFail($validated['alumno_id']);
+
+            // Verificar que el usuario sea alumno
+            if ($alumno->rol !== 'alumno') {
+                return back()->with('error', 'El usuario seleccionado no es un alumno.');
+            }
+
+            // Verificar que no esté ya en el grupo
+            if ($grupo->alumnos()->where('alumno_id', $alumno->id)->exists()) {
+                return back()->with('error', 'El alumno ya está inscrito en este grupo.');
+            }
+
+            // Agregar el alumno al grupo
+            $grupo->alumnos()->attach($alumno->id, [
+                'fecha_inscripcion' => now(),
+                'activo' => true,
+            ]);
+
+            return redirect()->route('admin.grupos.alumnos', $grupo->id)
+                ->with('success', 'Alumno agregado al grupo exitosamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al agregar alumno: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove a student from a group.
+     * 
+     * @param  int  $grupoId
+     * @param  int  $alumnoId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function removerAlumno($grupoId, $alumnoId)
+    {
+        try {
+            $grupo = Grupo::findOrFail($grupoId);
+            $alumno = User::findOrFail($alumnoId);
+
+            // Verificar que el alumno esté en el grupo
+            if (!$grupo->alumnos()->where('alumno_id', $alumno->id)->exists()) {
+                return back()->with('error', 'El alumno no está inscrito en este grupo.');
+            }
+
+            // Remover el alumno del grupo
+            $grupo->alumnos()->detach($alumno->id);
+
+            return redirect()->route('admin.grupos.alumnos', $grupo->id)
+                ->with('success', 'Alumno removido del grupo exitosamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al remover alumno: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Toggle the active status of a student in a group.
+     * 
+     * @param  int  $grupoId
+     * @param  int  $alumnoId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toggleAlumnoActivo($grupoId, $alumnoId)
+    {
+        try {
+            $grupo = Grupo::findOrFail($grupoId);
+            $alumno = User::findOrFail($alumnoId);
+
+            // Obtener el estado actual del alumno en el grupo
+            $pivotData = $grupo->alumnos()->where('alumno_id', $alumno->id)->first();
+
+            if (!$pivotData) {
+                return back()->with('error', 'El alumno no está inscrito en este grupo.');
+            }
+
+            // Obtener el estado actual desde la tabla pivote
+            $estadoActual = $pivotData->pivot->activo;
+
+            // Alternar el estado
+            $nuevoEstado = !$estadoActual;
+            $grupo->alumnos()->updateExistingPivot($alumno->id, [
+                'activo' => $nuevoEstado,
+            ]);
+
+            $mensaje = $nuevoEstado 
+                ? 'Alumno activado en el grupo exitosamente.' 
+                : 'Alumno desactivado en el grupo exitosamente.';
+
+            return redirect()->route('admin.grupos.alumnos', $grupo->id)
+                ->with('success', $mensaje);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al cambiar estado del alumno: ' . $e->getMessage());
+        }
+    }
 }

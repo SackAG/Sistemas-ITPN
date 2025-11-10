@@ -57,6 +57,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // CRUD de Grupos
     Route::resource('grupos', GrupoController::class);
     
+    // Rutas adicionales para gestión de alumnos en grupos
+    Route::get('grupos/{grupo}/alumnos', [GrupoController::class, 'alumnos'])
+        ->name('grupos.alumnos');
+    Route::post('grupos/{grupo}/alumnos', [GrupoController::class, 'agregarAlumno'])
+        ->name('grupos.alumnos.agregar');
+    Route::delete('grupos/{grupo}/alumnos/{alumno}', [GrupoController::class, 'removerAlumno'])
+        ->name('grupos.alumnos.remover');
+    Route::patch('grupos/{grupo}/alumnos/{alumno}/toggle', [GrupoController::class, 'toggleAlumnoActivo'])
+        ->name('grupos.alumnos.toggle');
+    
     // CRUD de Materias
     Route::resource('materias', MateriaController::class);
     

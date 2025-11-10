@@ -266,12 +266,11 @@
                                         </td>
                                         <td class="align-middle text-center">
                                             <div class="btn-group" role="group">
-                                                <button type="button" 
-                                                        class="btn btn-sm btn-outline-info"
-                                                        title="Ver alumnos"
-                                                        disabled>
+                                                <a href="{{ route('admin.grupos.alumnos', $grupo->id) }}" 
+                                                   class="btn btn-sm btn-outline-info"
+                                                   title="Ver alumnos">
                                                     <i class="bi bi-eye"></i>
-                                                </button>
+                                                </a>
                                                 <a href="{{ route('admin.grupos.edit', $grupo) }}" 
                                                    class="btn btn-sm btn-outline-primary"
                                                    title="Editar">
