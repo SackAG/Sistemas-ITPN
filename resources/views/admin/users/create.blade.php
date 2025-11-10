@@ -164,19 +164,21 @@
                                 </div>
                             </div>
 
-                            {{-- Campos para alumnos --}}
-                            <div id="alumnoFields" style="display: none;">
-                                <div class="alert alert-info">
+                            {{-- Campos condicionales según rol --}}
+                            <div id="rolDependentFields">
+                                <div class="alert alert-info" id="fieldsAlert" style="display: none;">
                                     <i class="bi bi-info-circle me-2"></i>
-                                    Los siguientes campos son obligatorios para alumnos
+                                    <span id="alertText"></span>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    {{-- Número de Control (solo alumno y profesor) --}}
+                                    <div class="col-md-6" id="no-ctrl-field" style="display: none;">
                                         <div class="mb-3">
                                             <label for="no_ctrl" class="form-label">
                                                 <i class="bi bi-card-text me-1"></i>
-                                                Número de Control <span class="text-danger" id="no_ctrl_required">*</span>
+                                                Número de Control 
+                                                <span class="text-danger" id="no_ctrl_required" style="display: none;">*</span>
                                             </label>
                                             <input type="text" 
                                                    class="form-control @error('no_ctrl') is-invalid @enderror" 
@@ -191,19 +193,23 @@
                                                     {{ $message }}
                                                 </div>
                                             @enderror
+                                            <div class="form-text" id="no_ctrl_help"></div>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    {{-- Carrera/Departamento (solo alumno y profesor) --}}
+                                    <div class="col-md-6" id="carrera-field" style="display: none;">
                                         <div class="mb-3">
                                             <label for="carrera_id" class="form-label">
                                                 <i class="bi bi-mortarboard me-1"></i>
-                                                Carrera <span class="text-danger" id="carrera_required">*</span>
+                                                <span id="carrera_label_alumno" style="display: none;">Carrera</span>
+                                                <span id="carrera_label_profesor" style="display: none;">Departamento/Carrera</span>
+                                                <span class="text-danger" id="carrera_required" style="display: none;">*</span>
                                             </label>
                                             <select class="form-select @error('carrera_id') is-invalid @enderror" 
                                                     id="carrera_id" 
                                                     name="carrera_id">
-                                                <option value="">Seleccionar carrera...</option>
+                                                <option value="">Seleccionar...</option>
                                                 @foreach($carreras as $carrera)
                                                     <option value="{{ $carrera->id }}" {{ old('carrera_id') == $carrera->id ? 'selected' : '' }}>
                                                         {{ $carrera->nombre }}
@@ -216,6 +222,7 @@
                                                     {{ $message }}
                                                 </div>
                                             @enderror
+                                            <div class="form-text" id="carrera_help"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -249,11 +256,10 @@
                         </h6>
                         <ul class="mb-0 text-muted small">
                             <li class="mb-2"><strong>Administrador:</strong> Acceso total al sistema</li>
-                            <li class="mb-2"><strong>Profesor:</strong> Gestiona grupos y asistencias</li>
-                            <li class="mb-2"><strong>Alumno:</strong> Consulta horarios y asistencias</li>
+                            <li class="mb-2"><strong>Profesor:</strong> Gestiona grupos y asistencias. Carrera opcional (representa departamento)</li>
+                            <li class="mb-2"><strong>Alumno:</strong> Consulta horarios y asistencias. Requiere número de control y carrera</li>
                             <li class="mb-2">El email debe ser único en el sistema</li>
-                            <li class="mb-2">La contraseña debe tener mínimo 8 caracteres</li>
-                            <li>Alumnos requieren número de control y carrera</li>
+                            <li>La contraseña debe tener mínimo 8 caracteres</li>
                         </ul>
                     </div>
                 </div>
@@ -289,23 +295,78 @@
     <script>
         // Mostrar/ocultar campos según el rol seleccionado
         document.getElementById('rol').addEventListener('change', function() {
-            const alumnoFields = document.getElementById('alumnoFields');
+            const rolValue = this.value;
+            
+            // Elementos del DOM
+            const fieldsAlert = document.getElementById('fieldsAlert');
+            const alertText = document.getElementById('alertText');
+            const noCtrlField = document.getElementById('no-ctrl-field');
+            const carreraField = document.getElementById('carrera-field');
             const noCtrlInput = document.getElementById('no_ctrl');
             const carreraInput = document.getElementById('carrera_id');
+            const noCtrlRequired = document.getElementById('no_ctrl_required');
+            const carreraRequired = document.getElementById('carrera_required');
+            const noCtrlHelp = document.getElementById('no_ctrl_help');
+            const carreraHelp = document.getElementById('carrera_help');
+            const carreraLabelAlumno = document.getElementById('carrera_label_alumno');
+            const carreraLabelProfesor = document.getElementById('carrera_label_profesor');
             
-            if (this.value === 'alumno') {
-                alumnoFields.style.display = 'block';
+            if (rolValue === 'alumno') {
+                // ALUMNO: ambos campos obligatorios
+                fieldsAlert.style.display = 'block';
+                alertText.textContent = 'Los siguientes campos son obligatorios para alumnos';
+                
+                // Mostrar campos
+                noCtrlField.style.display = 'block';
+                carreraField.style.display = 'block';
+                
+                // Configurar como obligatorios
                 noCtrlInput.required = true;
                 carreraInput.required = true;
+                noCtrlRequired.style.display = 'inline';
+                carreraRequired.style.display = 'inline';
+                
+                // Labels y textos de ayuda
+                carreraLabelAlumno.style.display = 'inline';
+                carreraLabelProfesor.style.display = 'none';
+                noCtrlHelp.textContent = 'Obligatorio para alumnos';
+                carreraHelp.textContent = 'Obligatorio para alumnos';
+                
+            } else if (rolValue === 'profesor') {
+                // PROFESOR: ambos campos opcionales
+                fieldsAlert.style.display = 'block';
+                alertText.textContent = 'Los siguientes campos son opcionales para profesores';
+                
+                // Mostrar campos
+                noCtrlField.style.display = 'block';
+                carreraField.style.display = 'block';
+                
+                // Configurar como opcionales
+                noCtrlInput.required = false;
+                carreraInput.required = false;
+                noCtrlRequired.style.display = 'none';
+                carreraRequired.style.display = 'none';
+                
+                // Labels y textos de ayuda
+                carreraLabelAlumno.style.display = 'none';
+                carreraLabelProfesor.style.display = 'inline';
+                noCtrlHelp.textContent = 'Opcional para profesores';
+                carreraHelp.textContent = 'Opcional (representa su departamento)';
+                
             } else {
-                alumnoFields.style.display = 'none';
+                // ADMIN: ocultar todo
+                fieldsAlert.style.display = 'none';
+                noCtrlField.style.display = 'none';
+                carreraField.style.display = 'none';
+                
+                // Quitar requerimientos
                 noCtrlInput.required = false;
                 carreraInput.required = false;
             }
         });
 
         // Trigger al cargar si hay valor old
-        @if(old('rol') === 'alumno')
+        @if(old('rol'))
             document.getElementById('rol').dispatchEvent(new Event('change'));
         @endif
     </script>

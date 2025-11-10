@@ -78,14 +78,21 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'rol' => ['required', Rule::in(['admin', 'profesor', 'alumno'])],
-            'no_ctrl' => 'nullable|string|max:20|unique:users,no_ctrl',
-            'carrera_id' => 'nullable|exists:carreras,id',
         ];
 
-        // Si es alumno, el número de control y carrera son obligatorios
+        // Validaciones condicionales según el rol
         if ($request->rol === 'alumno') {
+            // Si es alumno: numero_control y carrera obligatorios
             $rules['no_ctrl'] = 'required|string|max:20|unique:users,no_ctrl';
             $rules['carrera_id'] = 'required|exists:carreras,id';
+        } elseif ($request->rol === 'profesor') {
+            // Si es profesor: carrera opcional (representa su departamento)
+            $rules['carrera_id'] = 'nullable|exists:carreras,id';
+            $rules['no_ctrl'] = 'nullable|string|max:20|unique:users,no_ctrl';
+        } else {
+            // Si es admin: sin carrera ni número de control
+            $rules['carrera_id'] = 'nullable';
+            $rules['no_ctrl'] = 'nullable';
         }
 
         $validated = $request->validate($rules, [
@@ -146,14 +153,21 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => 'nullable|string|min:8|confirmed',
             'rol' => ['required', Rule::in(['admin', 'profesor', 'alumno'])],
-            'no_ctrl' => ['nullable', 'string', 'max:20', Rule::unique('users', 'no_ctrl')->ignore($user->id)],
-            'carrera_id' => 'nullable|exists:carreras,id',
         ];
 
-        // Si es alumno, el número de control y carrera son obligatorios
+        // Validaciones condicionales según el rol
         if ($request->rol === 'alumno') {
+            // Si es alumno: numero_control y carrera obligatorios
             $rules['no_ctrl'] = ['required', 'string', 'max:20', Rule::unique('users', 'no_ctrl')->ignore($user->id)];
             $rules['carrera_id'] = 'required|exists:carreras,id';
+        } elseif ($request->rol === 'profesor') {
+            // Si es profesor: carrera opcional (representa su departamento)
+            $rules['carrera_id'] = 'nullable|exists:carreras,id';
+            $rules['no_ctrl'] = ['nullable', 'string', 'max:20', Rule::unique('users', 'no_ctrl')->ignore($user->id)];
+        } else {
+            // Si es admin: sin carrera ni número de control
+            $rules['carrera_id'] = 'nullable';
+            $rules['no_ctrl'] = ['nullable', 'string', 'max:20', Rule::unique('users', 'no_ctrl')->ignore($user->id)];
         }
 
         $validated = $request->validate($rules, [

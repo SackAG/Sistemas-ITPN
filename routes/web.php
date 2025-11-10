@@ -6,6 +6,7 @@ use App\Livewire\Settings\Profile;
 use App\Models\Setting;
 use App\Http\Controllers\Admin\AulaController;
 use App\Http\Controllers\Admin\CarreraController;
+use App\Http\Controllers\Admin\GrupoController;
 use App\Http\Controllers\Admin\MateriaController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     
     // CRUD de Carreras
     Route::resource('carreras', CarreraController::class);
+    
+    // CRUD de Grupos
+    Route::resource('grupos', GrupoController::class);
     
     // CRUD de Materias
     Route::resource('materias', MateriaController::class);

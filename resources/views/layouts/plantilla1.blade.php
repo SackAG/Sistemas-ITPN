@@ -275,7 +275,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.grupos.*') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.grupos.*') ? 'active' : '' }}" href="{{ route('admin.grupos.index') }}">
                             <i class="bi bi-people-fill"></i>
                             Grupos
                         </a>

@@ -101,7 +101,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="#" class="card text-decoration-none text-center">
+                <a href="{{ route('admin.equipos.index') }}" class="card text-decoration-none text-center">
                     <div class="card-body">
                         <i class="bi bi-pc-display fs-1 text-success mb-2"></i>
                         <p class="fw-semibold mb-0">Gestionar Equipos</p>
@@ -109,7 +109,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="#" class="card text-decoration-none text-center">
+                <a href="{{ route('admin.grupos.index') }}" class="card text-decoration-none text-center">
                     <div class="card-body">
                         <i class="bi bi-people fs-1 text-warning mb-2"></i>
                         <p class="fw-semibold mb-0">Gestionar Grupos</p>
