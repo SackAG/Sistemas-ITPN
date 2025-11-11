@@ -4,6 +4,7 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Models\Setting;
+use App\Http\Controllers\Admin\AsignacionAulaController;
 use App\Http\Controllers\Admin\AulaController;
 use App\Http\Controllers\Admin\CarreraController;
 use App\Http\Controllers\Admin\GrupoController;
@@ -50,6 +51,13 @@ Route::post('/logout-simple', [App\Http\Controllers\Auth\LoginController::class,
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // CRUD de Aulas
     Route::resource('aulas', AulaController::class);
+    
+    // CRUD de Asignaciones de Aula
+    Route::resource('asignaciones', AsignacionAulaController::class);
+    
+    // Ruta adicional para horario semanal
+    Route::get('asignaciones/horario-semanal', [AsignacionAulaController::class, 'horarioSemanal'])
+        ->name('asignaciones.horario-semanal');
     
     // CRUD de Carreras
     Route::resource('carreras', CarreraController::class);

@@ -303,7 +303,7 @@
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Asignaciones</small>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.asignaciones.*') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.asignaciones.*') ? 'active' : '' }}" href="{{ route('admin.asignaciones.index') }}">
                             <i class="bi bi-calendar-week"></i>
                             Horarios de Aulas
                         </a>
