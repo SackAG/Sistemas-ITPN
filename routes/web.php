@@ -55,9 +55,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // CRUD de Asignaciones de Aula
     Route::resource('asignaciones', AsignacionAulaController::class);
     
-    // Ruta adicional para horario semanal
+    // Rutas adicionales para asignaciones
     Route::get('asignaciones/horario-semanal', [AsignacionAulaController::class, 'horarioSemanal'])
         ->name('asignaciones.horario-semanal');
+    Route::get('asignaciones-grupo/editar', [AsignacionAulaController::class, 'editarGrupo'])
+        ->name('asignaciones.editar-grupo');
+    Route::put('asignaciones-grupo/actualizar', [AsignacionAulaController::class, 'actualizarGrupo'])
+        ->name('asignaciones.actualizar-grupo');
+    Route::delete('asignaciones-grupo/eliminar', [AsignacionAulaController::class, 'eliminarGrupo'])
+        ->name('asignaciones.eliminar-grupo');
     
     // CRUD de Carreras
     Route::resource('carreras', CarreraController::class);

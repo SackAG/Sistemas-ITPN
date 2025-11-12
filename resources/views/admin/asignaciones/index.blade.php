@@ -44,6 +44,14 @@
             </div>
         @endif
 
+        @if(session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ session('warning') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
         @if(session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle me-2"></i>
@@ -201,9 +209,19 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ route('admin.asignaciones.editar-grupo', [
+                                                'grupo_id' => $asignacion->grupo_id,
+                                                'aula_id' => $asignacion->aula_id,
+                                                'hora_inicio' => $asignacion->hora_inicio,
+                                                'hora_fin' => $asignacion->hora_fin
+                                            ]) }}" 
+                                               class="btn btn-outline-info" 
+                                               title="Editar Grupo de Horario">
+                                                <i class="bi bi-calendar-week"></i>
+                                            </a>
                                             <a href="{{ route('admin.asignaciones.edit', $asignacion->id) }}" 
                                                class="btn btn-outline-primary" 
-                                               title="Editar">
+                                               title="Editar Solo Este Día">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <form action="{{ route('admin.asignaciones.destroy', $asignacion->id) }}" 

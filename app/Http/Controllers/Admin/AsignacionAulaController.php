@@ -112,7 +112,8 @@ class AsignacionAulaController extends Controller
         $validated = $request->validate([
             'aula_id' => 'required|exists:aulas,id',
             'grupo_id' => 'required|exists:grupos,id',
-            'dia_semana' => 'required|in:Lunes,Martes,Miércoles,Jueves,Viernes,Sábado',
+            'dias_semana' => 'required|array|min:1',
+            'dias_semana.*' => 'in:Lunes,Martes,Miércoles,Jueves,Viernes,Sábado',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'fecha_inicio_vigencia' => 'required|date',
@@ -123,8 +124,10 @@ class AsignacionAulaController extends Controller
             'aula_id.exists' => 'El aula seleccionada no existe.',
             'grupo_id.required' => 'El grupo es obligatorio.',
             'grupo_id.exists' => 'El grupo seleccionado no existe.',
-            'dia_semana.required' => 'El día de la semana es obligatorio.',
-            'dia_semana.in' => 'El día de la semana debe ser: Lunes, Martes, Miércoles, Jueves, Viernes o Sábado.',
+            'dias_semana.required' => 'Debes seleccionar al menos un día de la semana.',
+            'dias_semana.array' => 'Los días de la semana deben ser un arreglo.',
+            'dias_semana.min' => 'Debes seleccionar al menos un día de la semana.',
+            'dias_semana.*.in' => 'Uno o más días seleccionados no son válidos.',
             'hora_inicio.required' => 'La hora de inicio es obligatoria.',
             'hora_inicio.date_format' => 'La hora de inicio debe tener el formato HH:MM.',
             'hora_fin.required' => 'La hora de fin es obligatoria.',
@@ -137,30 +140,56 @@ class AsignacionAulaController extends Controller
             'fecha_fin_vigencia.after_or_equal' => 'La fecha de fin de vigencia debe ser igual o posterior a la fecha de inicio.',
         ]);
 
-        // Validación de conflictos de horario
-        $conflicto = $this->verificarConflictoHorario(
-            $request->aula_id,
-            $request->dia_semana,
-            $request->hora_inicio,
-            $request->hora_fin
-        );
+        // Validación de conflictos de horario para cada día seleccionado
+        $diasSeleccionados = $request->dias_semana;
+        $conflictos = [];
 
-        if ($conflicto) {
+        foreach ($diasSeleccionados as $dia) {
+            // Verificar conflicto para este día
+            $conflicto = $this->verificarConflictoHorario(
+                $request->aula_id,
+                $dia,
+                $request->hora_inicio,
+                $request->hora_fin
+            );
+
+            if ($conflicto) {
+                $grupo = Grupo::find($conflicto->grupo_id);
+                $horaInicio = substr($conflicto->hora_inicio, 0, 5);
+                $horaFin = substr($conflicto->hora_fin, 0, 5);
+                $conflictos[] = "{$dia}: {$horaInicio} - {$horaFin} (grupo {$grupo->clave_grupo})";
+            }
+        }
+
+        // Si hay conflictos, rechazar la operación y mostrar errores
+        if (count($conflictos) > 0) {
             $aula = Aula::find($request->aula_id);
-            $grupo = Grupo::with('materia')->find($conflicto->grupo_id);
+            $mensajeError = "El aula {$aula->nombre} ya está ocupada en los siguientes días y horarios:\n\n";
+            $mensajeError .= "• " . implode("\n• ", $conflictos);
             
             return back()->withInput()->withErrors([
-                'hora_inicio' => "El aula {$aula->nombre} ya está ocupada el {$request->dia_semana} de {$conflicto->hora_inicio} a {$conflicto->hora_fin} por el grupo {$grupo->clave_grupo}."
+                'dias_semana' => $mensajeError
             ]);
         }
 
-        // Crear la asignación
-        $validated['activo'] = $request->has('activo');
-
-        AsignacionAula::create($validated);
+        // Crear asignaciones solo si no hay conflictos
+        $asignacionesCreadas = 0;
+        foreach ($diasSeleccionados as $dia) {
+            AsignacionAula::create([
+                'aula_id' => $validated['aula_id'],
+                'grupo_id' => $validated['grupo_id'],
+                'dia_semana' => $dia,
+                'hora_inicio' => $validated['hora_inicio'],
+                'hora_fin' => $validated['hora_fin'],
+                'fecha_inicio_vigencia' => $validated['fecha_inicio_vigencia'],
+                'fecha_fin_vigencia' => $validated['fecha_fin_vigencia'],
+                'activo' => $request->has('activo'),
+            ]);
+            $asignacionesCreadas++;
+        }
 
         return redirect()->route('admin.asignaciones.index')
-            ->with('success', 'Asignación de aula creada exitosamente.');
+            ->with('success', "Se crearon {$asignacionesCreadas} asignación(es) de aula exitosamente.");
     }
 
     /**
@@ -267,6 +296,170 @@ class AsignacionAulaController extends Controller
 
         return redirect()->route('admin.asignaciones.index')
             ->with('success', 'Asignación de aula eliminada exitosamente.');
+    }
+
+    /**
+     * Mostrar formulario para editar un grupo de asignaciones.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
+    public function editarGrupo(Request $request)
+    {
+        // Buscar todas las asignaciones con los mismos parámetros
+        $asignaciones = AsignacionAula::with(['aula', 'grupo.materia', 'grupo.profesor'])
+            ->where('grupo_id', $request->grupo_id)
+            ->where('aula_id', $request->aula_id)
+            ->where('hora_inicio', $request->hora_inicio)
+            ->where('hora_fin', $request->hora_fin)
+            ->orderByRaw("FIELD(dia_semana, 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado')")
+            ->get();
+
+        if ($asignaciones->isEmpty()) {
+            return redirect()->route('admin.asignaciones.index')
+                ->with('error', 'No se encontraron asignaciones con esos parámetros.');
+        }
+
+        // Obtener datos para los selects
+        $aulas = Aula::orderBy('nombre')->get();
+        $grupos = Grupo::with(['materia', 'profesor'])
+            ->orderBy('clave_grupo')
+            ->get();
+
+        return view('admin.asignaciones.editar-grupo', compact('asignaciones', 'aulas', 'grupos'));
+    }
+
+    /**
+     * Actualizar un grupo de asignaciones.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function actualizarGrupo(Request $request)
+    {
+        // Validación
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'exists:asignaciones_aula,id',
+            'aula_id' => 'required|exists:aulas,id',
+            'grupo_id' => 'required|exists:grupos,id',
+            'hora_inicio' => 'required|date_format:H:i',
+            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
+            'fecha_inicio_vigencia' => 'required|date',
+            'fecha_fin_vigencia' => 'required|date|after_or_equal:fecha_inicio_vigencia',
+            'activo' => 'nullable|boolean',
+        ], [
+            'ids.required' => 'No se recibieron asignaciones para actualizar.',
+            'aula_id.required' => 'El aula es obligatoria.',
+            'grupo_id.required' => 'El grupo es obligatorio.',
+            'hora_inicio.required' => 'La hora de inicio es obligatoria.',
+            'hora_fin.required' => 'La hora de fin es obligatoria.',
+            'hora_fin.after' => 'La hora de fin debe ser posterior a la hora de inicio.',
+            'fecha_inicio_vigencia.required' => 'La fecha de inicio de vigencia es obligatoria.',
+            'fecha_fin_vigencia.required' => 'La fecha de fin de vigencia es obligatoria.',
+            'fecha_fin_vigencia.after_or_equal' => 'La fecha de fin de vigencia debe ser igual o posterior a la fecha de inicio.',
+        ]);
+
+        // Obtener las asignaciones a actualizar
+        $asignaciones = AsignacionAula::whereIn('id', $request->ids)->get();
+        $conflictos = [];
+        $actualizadas = 0;
+
+        foreach ($asignaciones as $asignacion) {
+            // Verificar conflictos (ignorando la asignación actual)
+            $conflicto = $this->verificarConflictoHorario(
+                $request->aula_id,
+                $asignacion->dia_semana,
+                $request->hora_inicio,
+                $request->hora_fin,
+                $asignacion->id
+            );
+
+            if ($conflicto) {
+                $grupo = Grupo::find($conflicto->grupo_id);
+                $conflictos[] = "{$asignacion->dia_semana} (ocupado por {$grupo->clave_grupo})";
+                continue;
+            }
+
+            // Actualizar la asignación
+            $asignacion->update([
+                'aula_id' => $request->aula_id,
+                'grupo_id' => $request->grupo_id,
+                'hora_inicio' => $request->hora_inicio,
+                'hora_fin' => $request->hora_fin,
+                'fecha_inicio_vigencia' => $request->fecha_inicio_vigencia,
+                'fecha_fin_vigencia' => $request->fecha_fin_vigencia,
+                'activo' => $request->has('activo'),
+            ]);
+
+            $actualizadas++;
+        }
+
+        // Mensaje de resultado
+        if (count($conflictos) > 0) {
+            $mensaje = "Se actualizaron {$actualizadas} asignación(es). ";
+            $mensaje .= "Conflictos detectados en: " . implode(', ', $conflictos);
+            return redirect()->route('admin.asignaciones.index')
+                ->with('warning', $mensaje);
+        }
+
+        return redirect()->route('admin.asignaciones.index')
+            ->with('success', "Se actualizaron {$actualizadas} asignación(es) exitosamente.");
+    }
+
+    /**
+     * Eliminar un grupo de asignaciones.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function eliminarGrupo(Request $request)
+    {
+        // Validación
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'exists:asignaciones_aula,id',
+        ], [
+            'ids.required' => 'No se recibieron asignaciones para eliminar.',
+        ]);
+
+        $asignaciones = AsignacionAula::whereIn('id', $request->ids)->get();
+        $eliminadas = 0;
+        $conSesiones = [];
+
+        foreach ($asignaciones as $asignacion) {
+            // Verificar si tiene sesiones de clase registradas
+            if ($asignacion->sesiones()->count() > 0) {
+                $conSesiones[] = $asignacion->dia_semana;
+                continue;
+            }
+
+            $asignacion->delete();
+            $eliminadas++;
+        }
+
+        // Mensaje de resultado
+        if (count($conSesiones) > 0) {
+            $mensaje = "Se eliminaron {$eliminadas} asignación(es). ";
+            $mensaje .= "No se pudieron eliminar los días: " . implode(', ', $conSesiones) . " (tienen sesiones registradas)";
+            return redirect()->route('admin.asignaciones.index')
+                ->with('warning', $mensaje);
+        }
+
+        return redirect()->route('admin.asignaciones.index')
+            ->with('success', "Se eliminaron {$eliminadas} asignación(es) exitosamente.");
+    }
+
+    /**
+     * Verificar si existe un conflicto de horario en el aula.
+     * 
+     * @param  int  $aulaId
+     * @param  string  $diaSemana
+     * @param  string  $horaInicio
+     * @param  string  $horaFin
+     * @param  int|null  $ignorarId
+     * @return \App\Models\AsignacionAula|null
+```
     }
 
     /**
