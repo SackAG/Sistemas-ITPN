@@ -379,13 +379,13 @@
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Equipos</small>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profesor.equipos.reservar') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('profesor.reservaciones.create') ? 'active' : '' }}" href="{{ route('profesor.reservaciones.create') }}">
                             <i class="bi bi-calendar-plus"></i>
                             Reservar Equipos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profesor.equipos.mis-reservaciones') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('profesor.reservaciones.*') && !request()->routeIs('profesor.reservaciones.create') ? 'active' : '' }}" href="{{ route('profesor.reservaciones.index') }}">
                             <i class="bi bi-list-check"></i>
                             Mis Reservaciones
                         </a>

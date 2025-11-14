@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReservacionEquipo extends Model
 {
+    protected $table = 'reservaciones_equipos';
+
     protected $fillable = [
+        'profesor_id',
         'alumno_id',
         'equipo_id',
         'aula_id',
@@ -25,6 +28,11 @@ class ReservacionEquipo extends Model
     ];
 
     // Relaciones
+    public function profesor()
+    {
+        return $this->belongsTo(User::class, 'profesor_id');
+    }
+
     public function alumno()
     {
         return $this->belongsTo(User::class, 'alumno_id');

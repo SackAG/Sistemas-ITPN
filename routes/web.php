@@ -67,6 +67,11 @@ Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor
     
     Route::get('/grupos/{grupo}/alumno/{alumno}/reporte', [App\Http\Controllers\Profesor\AsistenciaController::class, 'reporteAlumno'])
         ->name('asistencias.reporte-alumno');
+    
+    // Reservaciones de Equipos
+    Route::resource('reservaciones', App\Http\Controllers\Profesor\ReservacionEquipoController::class);
+    Route::get('/reservaciones/equipos-aula', [App\Http\Controllers\Profesor\ReservacionEquipoController::class, 'getEquiposPorAula'])
+        ->name('reservaciones.equipos-aula');
 });
 
 // Rutas para Administradores

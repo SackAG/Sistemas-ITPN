@@ -249,10 +249,12 @@
                                                 <select name="asistencias[{{ $index }}][equipo_id]" 
                                                         id="equipo_select_{{ $index }}"
                                                         class="form-select form-select-sm equipo-select" 
+                                                        onchange="actualizarEquiposDisponibles()"
                                                         style="display: {{ $asistenciaExistente && $asistenciaExistente->tipo_equipo_usado == 'escuela' ? 'block' : 'none' }};">
                                                     <option value="">Sin asignar</option>
                                                     @foreach($asignacionAula->aula->equipos->where('activo', true) as $equipo)
                                                         <option value="{{ $equipo->id }}"
+                                                                data-equipo-nombre="{{ $equipo->nombre }} - {{ $equipo->codigo_inventario }}"
                                                                 {{ $asistenciaExistente && $asistenciaExistente->equipo_id == $equipo->id ? 'selected' : '' }}>
                                                             {{ $equipo->nombre }} - {{ $equipo->codigo_inventario }}
                                                         </option>
@@ -338,6 +340,49 @@
 
 @push('scripts')
 <script>
+    // Función para actualizar equipos disponibles
+    function actualizarEquiposDisponibles() {
+        // Obtener todos los selectores de equipos
+        const equipoSelects = document.querySelectorAll('.equipo-select');
+        
+        // Crear un Set con los IDs de equipos ya seleccionados
+        const equiposSeleccionados = new Set();
+        equipoSelects.forEach(select => {
+            const valorSeleccionado = select.value;
+            if (valorSeleccionado && valorSeleccionado !== '') {
+                equiposSeleccionados.add(valorSeleccionado);
+            }
+        });
+        
+        // Actualizar cada selector
+        equipoSelects.forEach(select => {
+            const valorActual = select.value;
+            const options = select.querySelectorAll('option');
+            
+            options.forEach(option => {
+                const equipoId = option.value;
+                
+                // No deshabilitar la opción vacía "Sin asignar"
+                if (equipoId === '') {
+                    option.disabled = false;
+                    option.style.display = '';
+                    return;
+                }
+                
+                // Si este equipo está seleccionado en OTRO selector, deshabilitarlo
+                if (equiposSeleccionados.has(equipoId) && equipoId !== valorActual) {
+                    option.disabled = true;
+                    option.style.color = '#999';
+                    option.textContent = option.getAttribute('data-equipo-nombre') + ' (En uso)';
+                } else {
+                    option.disabled = false;
+                    option.style.color = '';
+                    option.textContent = option.getAttribute('data-equipo-nombre');
+                }
+            });
+        });
+    }
+
     // Función para mostrar/ocultar el selector de equipo
     function toggleEquipoSelect(index) {
         const tipoSelect = document.querySelector(`select[name="asistencias[${index}][tipo_equipo_usado]"]`);
@@ -349,6 +394,7 @@
             } else {
                 equipoSelect.style.display = 'none';
                 equipoSelect.value = ''; // Limpiar selección
+                actualizarEquiposDisponibles(); // Actualizar disponibilidad
             }
         }
     }
@@ -360,6 +406,9 @@
             const index = select.dataset.index;
             toggleEquipoSelect(index);
         });
+        
+        // Actualizar equipos disponibles al cargar
+        actualizarEquiposDisponibles();
     });
     
     // Función para marcar todos los alumnos con un estado
@@ -381,6 +430,14 @@
         textareas.forEach(textarea => {
             textarea.value = '';
         });
+        
+        // Limpiar selectores de equipos
+        const equipoSelects = document.querySelectorAll('.equipo-select');
+        equipoSelects.forEach(select => {
+            select.value = '';
+        });
+        
+        actualizarEquiposDisponibles();
     }
     
     // Validar formulario antes de enviar
