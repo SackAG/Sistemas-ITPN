@@ -67,7 +67,7 @@ class AsistenciaController extends Controller
                     $query->whereNull('fecha_fin_vigencia')
                         ->orWhere('fecha_fin_vigencia', '>=', $fecha);
                 })
-                ->with('aula')
+                ->with(['aula', 'aula.equipos'])
                 ->first();
 
             // Verificar si ya se pasó lista hoy para este grupo
@@ -101,6 +101,8 @@ class AsistenciaController extends Controller
                 'asistencias.*.alumno_id' => 'required|exists:users,id',
                 'asistencias.*.estado' => 'required|in:presente,ausente,retardo,justificado',
                 'asistencias.*.observaciones' => 'nullable|string|max:500',
+                'asistencias.*.tipo_equipo_usado' => 'nullable|in:propio,escuela',
+                'asistencias.*.equipo_id' => 'nullable|exists:equipos,id',
                 'aula_id' => 'nullable|exists:aulas,id',
                 'hora_entrada' => 'nullable|date_format:H:i',
                 'hora_salida' => 'nullable|date_format:H:i',
@@ -117,6 +119,8 @@ class AsistenciaController extends Controller
                 'asistencias.*.estado.required' => 'El estado es obligatorio.',
                 'asistencias.*.estado.in' => 'El estado debe ser: presente, ausente, retardo o justificado.',
                 'asistencias.*.observaciones.max' => 'Las observaciones no pueden exceder 500 caracteres.',
+                'asistencias.*.tipo_equipo_usado.in' => 'El tipo de equipo debe ser: propio o escuela.',
+                'asistencias.*.equipo_id.exists' => 'El equipo no existe.',
                 'aula_id.exists' => 'El aula no existe.',
                 'hora_entrada.date_format' => 'La hora de entrada debe tener formato HH:MM.',
                 'hora_salida.date_format' => 'La hora de salida debe tener formato HH:MM.',
@@ -152,6 +156,8 @@ class AsistenciaController extends Controller
                     [
                         'estado' => $asistenciaData['estado'],
                         'observaciones' => $asistenciaData['observaciones'] ?? null,
+                        'tipo_equipo_usado' => $asistenciaData['tipo_equipo_usado'] ?? 'escuela',
+                        'equipo_id' => $asistenciaData['equipo_id'] ?? null,
                         'registrado_por' => auth()->id(),
                     ]
                 );

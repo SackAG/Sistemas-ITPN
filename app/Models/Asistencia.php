@@ -11,6 +11,7 @@ class Asistencia extends Model
         'grupo_id',
         'alumno_id',
         'equipo_id',
+        'tipo_equipo_usado',
         'fecha',
         'estado',
         'hora_entrada',

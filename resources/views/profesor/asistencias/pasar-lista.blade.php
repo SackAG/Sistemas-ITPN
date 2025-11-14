@@ -170,6 +170,7 @@
                                 <th>Nombre Completo</th>
                                 <th style="width: 150px;">Carrera</th>
                                 <th class="text-center" style="width: 250px;">Estado</th>
+                                <th style="width: 200px;">Equipo</th>
                                 <th style="width: 200px;">Observaciones</th>
                             </tr>
                         </thead>
@@ -228,6 +229,38 @@
                                             <label class="btn btn-outline-info" for="justificado_{{ $alumno->id }}">
                                                 <i class="bi bi-shield-check"></i> Justificado
                                             </label>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">
+                                        <div class="d-flex flex-column gap-2">
+                                            <select name="asistencias[{{ $index }}][tipo_equipo_usado]" 
+                                                    class="form-select form-select-sm tipo-equipo-select" 
+                                                    data-index="{{ $index }}"
+                                                    onchange="toggleEquipoSelect({{ $index }})">
+                                                <option value="escuela" {{ $asistenciaExistente && $asistenciaExistente->tipo_equipo_usado == 'escuela' ? 'selected' : '' }}>
+                                                    Equipo de la Escuela
+                                                </option>
+                                                <option value="propio" {{ $asistenciaExistente && $asistenciaExistente->tipo_equipo_usado == 'propio' ? 'selected' : '' }}>
+                                                    Equipo Propio
+                                                </option>
+                                            </select>
+                                            
+                                            @if($asignacionAula && $asignacionAula->aula->equipos->where('activo', true)->count() > 0)
+                                                <select name="asistencias[{{ $index }}][equipo_id]" 
+                                                        id="equipo_select_{{ $index }}"
+                                                        class="form-select form-select-sm equipo-select" 
+                                                        style="display: {{ $asistenciaExistente && $asistenciaExistente->tipo_equipo_usado == 'escuela' ? 'block' : 'none' }};">
+                                                    <option value="">Sin asignar</option>
+                                                    @foreach($asignacionAula->aula->equipos->where('activo', true) as $equipo)
+                                                        <option value="{{ $equipo->id }}"
+                                                                {{ $asistenciaExistente && $asistenciaExistente->equipo_id == $equipo->id ? 'selected' : '' }}>
+                                                            {{ $equipo->nombre }} - {{ $equipo->codigo_inventario }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            @else
+                                                <small class="text-muted">No hay equipos en el aula</small>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="align-middle">
@@ -305,6 +338,30 @@
 
 @push('scripts')
 <script>
+    // Función para mostrar/ocultar el selector de equipo
+    function toggleEquipoSelect(index) {
+        const tipoSelect = document.querySelector(`select[name="asistencias[${index}][tipo_equipo_usado]"]`);
+        const equipoSelect = document.getElementById(`equipo_select_${index}`);
+        
+        if (equipoSelect) {
+            if (tipoSelect.value === 'escuela') {
+                equipoSelect.style.display = 'block';
+            } else {
+                equipoSelect.style.display = 'none';
+                equipoSelect.value = ''; // Limpiar selección
+            }
+        }
+    }
+    
+    // Inicializar estado de los selectores al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoSelects = document.querySelectorAll('.tipo-equipo-select');
+        tipoSelects.forEach(select => {
+            const index = select.dataset.index;
+            toggleEquipoSelect(index);
+        });
+    });
+    
     // Función para marcar todos los alumnos con un estado
     function marcarTodos(estado) {
         const radios = document.querySelectorAll(`input[type="radio"][value="${estado}"]`);

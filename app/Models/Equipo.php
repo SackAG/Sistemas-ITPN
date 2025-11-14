@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Equipo extends Model
 {
     protected $fillable = [
+        'nombre',
         'codigo_inventario',
         'tipo',
         'marca',
@@ -15,14 +16,17 @@ class Equipo extends Model
         'estado',
         'aula_id',
         'ubicacion_en_aula',
+        'ubicacion_especifica',
         'propiedad',
         'propietario_id',
         'fecha_adquisicion',
         'observaciones',
+        'activo',
     ];
 
     protected $casts = [
         'fecha_adquisicion' => 'date',
+        'activo' => 'boolean',
     ];
 
     // Relaciones

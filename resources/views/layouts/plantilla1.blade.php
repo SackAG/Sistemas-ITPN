@@ -292,7 +292,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.equipos.*') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.equipos.*') ? 'active' : '' }}" href="{{ route('admin.equipos.index') }}">
                             <i class="bi bi-pc-display"></i>
                             Equipos
                         </a>

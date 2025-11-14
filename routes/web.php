@@ -74,6 +74,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // CRUD de Aulas
     Route::resource('aulas', AulaController::class);
     
+    // CRUD de Equipos
+    Route::resource('equipos', App\Http\Controllers\Admin\EquipoController::class);
+    
     // CRUD de Asignaciones de Aula
     Route::resource('asignaciones', AsignacionAulaController::class);
     
