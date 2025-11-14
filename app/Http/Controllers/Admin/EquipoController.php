@@ -104,6 +104,9 @@ class EquipoController extends Controller
     public function store(Request $request)
     {
         try {
+            // AGREGAR ESTE LOG TEMPORAL
+            \Log::info('Datos recibidos en store:', $request->all());
+            
             $validated = $request->validate([
                 'nombre' => 'required|string|max:255',
                 'tipo' => 'required|in:computadora,proyector,switch,router,impresora,otro',
@@ -115,7 +118,7 @@ class EquipoController extends Controller
                 'estado' => 'required|in:disponible,en_uso,mantenimiento,dañado,dado_de_baja',
                 'fecha_adquisicion' => 'nullable|date|before_or_equal:today',
                 'observaciones' => 'nullable|string',
-                'activo' => 'boolean',
+                'activo' => 'nullable|boolean',
             ], [
                 'nombre.required' => 'El nombre del equipo es obligatorio.',
                 'nombre.max' => 'El nombre no puede exceder 255 caracteres.',
@@ -134,23 +137,42 @@ class EquipoController extends Controller
                 'fecha_adquisicion.before_or_equal' => 'La fecha de adquisición no puede ser futura.',
             ]);
 
+            // AGREGAR LOG DESPUÉS DE VALIDACIÓN
+            \Log::info('Validación pasó OK');
+
             // Establecer valor por defecto para activo
-            $validated['activo'] = $request->has('activo') ? true : false;
+            $validated['activo'] = $request->has('activo') ? 1 : 0;
 
-            // Generar código de inventario si no existe
-            if (!isset($validated['codigo_inventario'])) {
-                $validated['codigo_inventario'] = $this->generarCodigoInventario($validated['tipo']);
-            }
+            // Generar código de inventario
+            $validated['codigo_inventario'] = $this->generarCodigoInventario($validated['tipo']);
+            
+            // AGREGAR LOG ANTES DE CREAR
+            \Log::info('Intentando crear con datos:', $validated);
 
-            Equipo::create($validated);
+            $equipo = Equipo::create($validated);
+            
+            // AGREGAR LOG DESPUÉS DE CREAR
+            \Log::info('Equipo creado con ID: ' . $equipo->id);
 
             return redirect()
                 ->route('admin.equipos.index')
                 ->with('success', 'Equipo creado exitosamente.');
+                
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->errors())->withInput();
+            // CAPTURAR ERRORES DE VALIDACIÓN
+            \Log::error('Error de validación:', $e->errors());
+            return back()
+                ->withErrors($e->errors())
+                ->withInput()
+                ->with('error', 'Hay errores en el formulario. Por favor revisa los campos marcados.');
+                
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al crear el equipo: ' . $e->getMessage())->withInput();
+            // CAPTURAR CUALQUIER OTRO ERROR
+            \Log::error('Error al crear equipo: ' . $e->getMessage());
+            \Log::error('Trace: ' . $e->getTraceAsString());
+            return back()
+                ->with('error', 'Error al crear el equipo: ' . $e->getMessage())
+                ->withInput();
         }
     }
 

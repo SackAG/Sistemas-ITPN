@@ -13,6 +13,7 @@ class Equipo extends Model
         'marca',
         'modelo',
         'numero_serie',
+        'codigo_inventario',
         'estado',
         'aula_id',
         'ubicacion_en_aula',
