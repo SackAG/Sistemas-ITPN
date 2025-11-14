@@ -351,7 +351,7 @@
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Mis Clases</small>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profesor.grupos.*') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('profesor.dashboard') ? 'active' : '' }}" href="{{ route('profesor.dashboard') }}">
                             <i class="bi bi-people-fill"></i>
                             Mis Grupos
                         </a>
@@ -368,15 +368,9 @@
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Asistencias</small>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profesor.asistencias.tomar') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('profesor.asistencias.*') ? 'active' : '' }}" href="{{ route('profesor.dashboard') }}">
                             <i class="bi bi-clipboard-check"></i>
-                            Tomar Asistencia
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profesor.asistencias.historial') ? 'active' : '' }}" href="#">
-                            <i class="bi bi-clock-history"></i>
-                            Historial de Asistencias
+                            Gestionar Asistencias
                         </a>
                     </li>
 

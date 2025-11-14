@@ -14,8 +14,17 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="mb-0">
+                                <i class="bi bi-people-fill"></i> Mis Grupos
+                            </h3>
+                            <a href="{{ route('profesor.dashboard') }}" class="btn btn-light btn-sm">
+                                <i class="bi bi-grid-3x3"></i> Ver Todos
+                            </a>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h3 class="card-title mb-4">Mis Grupos</h3>
                         
                         @if($grupos->count() > 0)
                             <div class="table-responsive">
@@ -25,6 +34,7 @@
                                             <th>Materia</th>
                                             <th>Clave Grupo</th>
                                             <th>Periodo</th>
+                                            <th>Alumnos</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -32,11 +42,23 @@
                                         @foreach($grupos as $grupo)
                                             <tr>
                                                 <td>{{ $grupo->materia->nombre }}</td>
-                                                <td>{{ $grupo->clave_grupo }}</td>
-                                                <td>{{ $grupo->periodo }}</td>
+                                                <td><span class="badge bg-secondary">{{ $grupo->clave_grupo }}</span></td>
+                                                <td>{{ $grupo->periodo }} {{ $grupo->año }}</td>
                                                 <td>
-                                                    <a href="#" class="btn btn-sm btn-primary">
-                                                        Registrar Clase
+                                                    <span class="badge bg-info">
+                                                        <i class="bi bi-people"></i> {{ $grupo->alumnos->count() }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('profesor.asistencias.pasar-lista', $grupo->id) }}" 
+                                                       class="btn btn-sm btn-success" 
+                                                       title="Pasar lista de hoy">
+                                                        <i class="bi bi-clipboard-check"></i> Pasar Lista
+                                                    </a>
+                                                    <a href="{{ route('profesor.asistencias.historial', $grupo->id) }}" 
+                                                       class="btn btn-sm btn-outline-primary"
+                                                       title="Ver historial completo">
+                                                        <i class="bi bi-clock-history"></i> Historial
                                                     </a>
                                                 </td>
                                             </tr>

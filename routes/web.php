@@ -48,6 +48,28 @@ Route::get('/login-simple', [App\Http\Controllers\Auth\LoginController::class, '
 Route::post('/login-simple', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login.post');
 Route::post('/logout-simple', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout.simple');
 
+// Rutas para Profesores
+Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
+    
+    // Dashboard del profesor
+    Route::get('/dashboard', [App\Http\Controllers\Profesor\AsistenciaController::class, 'index'])
+        ->name('dashboard');
+    
+    // Asistencias
+    Route::get('/grupos/{grupo}/pasar-lista', [App\Http\Controllers\Profesor\AsistenciaController::class, 'pasarLista'])
+        ->name('asistencias.pasar-lista');
+    
+    Route::post('/grupos/{grupo}/guardar-asistencias', [App\Http\Controllers\Profesor\AsistenciaController::class, 'guardarAsistencias'])
+        ->name('asistencias.guardar');
+    
+    Route::get('/grupos/{grupo}/historial', [App\Http\Controllers\Profesor\AsistenciaController::class, 'historial'])
+        ->name('asistencias.historial');
+    
+    Route::get('/grupos/{grupo}/alumno/{alumno}/reporte', [App\Http\Controllers\Profesor\AsistenciaController::class, 'reporteAlumno'])
+        ->name('asistencias.reporte-alumno');
+});
+
+// Rutas para Administradores
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // CRUD de Aulas
     Route::resource('aulas', AulaController::class);
