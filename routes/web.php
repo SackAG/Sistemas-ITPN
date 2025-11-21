@@ -17,6 +17,11 @@ Route::get('/', function () {
     return view('inicio');
 })->name('home');
 
+
+Route::get('examen', [App\Http\Controllers\ExamenController::class, 'index'])->name('examen.index');
+Route::get('examen/{id}', [App\Http\Controllers\ExamenController::class, 'mostrarCarreras'])->name('examen.show');
+Route::get('examen/{id}/carrera/{carrera_id}', [App\Http\Controllers\ExamenController::class, 'mostrarMaterias'])->name('examen.materias');
+
 // Route::get('dashboard', function () {
 //     return view('index');
 // })  ->middleware(['auth', 'verified'])
