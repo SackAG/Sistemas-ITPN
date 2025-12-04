@@ -55,24 +55,24 @@ Route::post('/logout-simple', [App\Http\Controllers\Auth\LoginController::class,
 
 // Rutas para Profesores
 Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
-    
+
     // Dashboard del profesor
     Route::get('/dashboard', [App\Http\Controllers\Profesor\AsistenciaController::class, 'index'])
         ->name('dashboard');
-    
+
     // Asistencias
     Route::get('/grupos/{grupo}/pasar-lista', [App\Http\Controllers\Profesor\AsistenciaController::class, 'pasarLista'])
         ->name('asistencias.pasar-lista');
-    
+
     Route::post('/grupos/{grupo}/guardar-asistencias', [App\Http\Controllers\Profesor\AsistenciaController::class, 'guardarAsistencias'])
         ->name('asistencias.guardar');
-    
+
     Route::get('/grupos/{grupo}/historial', [App\Http\Controllers\Profesor\AsistenciaController::class, 'historial'])
         ->name('asistencias.historial');
-    
+
     Route::get('/grupos/{grupo}/alumno/{alumno}/reporte', [App\Http\Controllers\Profesor\AsistenciaController::class, 'reporteAlumno'])
         ->name('asistencias.reporte-alumno');
-    
+
     // Reservaciones de Equipos
     Route::resource('reservaciones', App\Http\Controllers\Profesor\ReservacionEquipoController::class);
     Route::get('/reservaciones/equipos-aula', [App\Http\Controllers\Profesor\ReservacionEquipoController::class, 'getEquiposPorAula'])
@@ -83,13 +83,13 @@ Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // CRUD de Aulas
     Route::resource('aulas', AulaController::class);
-    
+
     // CRUD de Equipos
     Route::resource('equipos', App\Http\Controllers\Admin\EquipoController::class);
-    
+
     // CRUD de Asignaciones de Aula
     Route::resource('asignaciones', AsignacionAulaController::class);
-    
+
     // Rutas adicionales para asignaciones
     Route::get('asignaciones/horario-semanal', [AsignacionAulaController::class, 'horarioSemanal'])
         ->name('asignaciones.horario-semanal');
@@ -99,13 +99,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('asignaciones.actualizar-grupo');
     Route::delete('asignaciones-grupo/eliminar', [AsignacionAulaController::class, 'eliminarGrupo'])
         ->name('asignaciones.eliminar-grupo');
-    
+
     // CRUD de Carreras
     Route::resource('carreras', CarreraController::class);
-    
+
     // CRUD de Grupos
     Route::resource('grupos', GrupoController::class);
-    
+
     // Rutas adicionales para gestión de alumnos en grupos
     Route::get('grupos/{grupo}/alumnos', [GrupoController::class, 'alumnos'])
         ->name('grupos.alumnos');
@@ -115,16 +115,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('grupos.alumnos.remover');
     Route::patch('grupos/{grupo}/alumnos/{alumno}/toggle', [GrupoController::class, 'toggleAlumnoActivo'])
         ->name('grupos.alumnos.toggle');
-    
+
     // CRUD de Materias
     Route::resource('materias', MateriaController::class);
-    
+
     // CRUD de Usuarios
     Route::resource('users', UserController::class);
-    
+
     // Ruta adicional para resetear contraseña
     Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])
         ->name('users.reset-password');
+
+    // Reportes
+    Route::get('reportes/asistencias', [App\Http\Controllers\Admin\ReporteController::class, 'asistencias'])
+        ->name('reportes.asistencias');
+    Route::get('reportes/equipos', [App\Http\Controllers\Admin\ReporteController::class, 'equipos'])
+        ->name('reportes.equipos');
+    Route::get('reportes/aulas', [App\Http\Controllers\Admin\ReporteController::class, 'aulas'])
+        ->name('reportes.aulas');
 });
 
 require __DIR__ . '/auth.php';

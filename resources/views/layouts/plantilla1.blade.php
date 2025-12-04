@@ -11,7 +11,7 @@
         body {
             overflow-x: hidden;
         }
-        
+
         /* Sidebar */
         .sidebar {
             position: fixed;
@@ -26,44 +26,44 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .sidebar-header {
             padding: 0 1.5rem 1.5rem;
             border-bottom: 1px solid #e5e7eb;
             margin-bottom: 1rem;
         }
-        
+
         .sidebar-brand {
             font-weight: 600;
             font-size: 1.25rem;
             color: #2c3e50;
             text-decoration: none;
         }
-        
+
         .sidebar-nav {
             padding: 0 1rem 1rem 1rem;
             overflow-y: auto;
             flex: 1;
             max-height: calc(100vh - 200px);
         }
-        
+
         .sidebar-nav::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .sidebar-nav::-webkit-scrollbar-track {
             background: transparent;
         }
-        
+
         .sidebar-nav::-webkit-scrollbar-thumb {
             background: #d1d5db;
             border-radius: 3px;
         }
-        
+
         .sidebar-nav::-webkit-scrollbar-thumb:hover {
             background: #9ca3af;
         }
-        
+
         .sidebar-nav .nav-link {
             color: #5a6c7d;
             font-weight: 500;
@@ -74,22 +74,22 @@
             display: flex;
             align-items: center;
         }
-        
+
         .sidebar-nav .nav-link i {
             margin-right: 0.75rem;
             font-size: 1.1rem;
         }
-        
+
         .sidebar-nav .nav-link:hover {
             background-color: #f3f4f6;
             color: #0d6efd;
         }
-        
+
         .sidebar-nav .nav-link.active {
             background-color: #e7f1ff;
             color: #0d6efd;
         }
-        
+
         .sidebar-footer {
             position: absolute;
             bottom: 0;
@@ -97,7 +97,7 @@
             padding: 1rem 1.5rem;
             border-top: 1px solid #e5e7eb;
         }
-        
+
         .user-info {
             display: flex;
             align-items: center;
@@ -105,7 +105,7 @@
             border-radius: 8px;
             background-color: #f9fafb;
         }
-        
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -118,30 +118,30 @@
             font-weight: 600;
             margin-right: 0.75rem;
         }
-        
+
         .user-details {
             flex: 1;
         }
-        
+
         .user-name {
             font-weight: 600;
             font-size: 0.9rem;
             color: #2c3e50;
             margin: 0;
         }
-        
+
         .user-role {
             font-size: 0.75rem;
             color: #6b7280;
             margin: 0;
         }
-        
+
         /* Main content */
         .main-content {
             margin-left: 280px;
             min-height: 100vh;
         }
-        
+
         /* Top bar */
         .top-bar {
             background-color: #ffffff;
@@ -151,7 +151,7 @@
             justify-content: flex-end;
             align-items: center;
         }
-        
+
         .theme-toggle {
             background: none;
             border: none;
@@ -162,74 +162,74 @@
             transition: color 0.3s ease, transform 0.3s ease;
             border-radius: 8px;
         }
-        
+
         .theme-toggle:hover {
             color: #0d6efd;
             background-color: #f3f4f6;
         }
-        
+
         .content-wrapper {
             padding: 2rem 1.5rem;
         }
-        
+
         /* Dark mode */
         [data-bs-theme="dark"] .sidebar {
             background-color: #1a1d20;
             box-shadow: 2px 0 4px rgba(0,0,0,0.3);
         }
-        
+
         [data-bs-theme="dark"] .sidebar-header {
             border-bottom-color: #2d3236;
         }
-        
+
         [data-bs-theme="dark"] .sidebar-brand {
             color: #e8eaed;
         }
-        
+
         [data-bs-theme="dark"] .sidebar-nav .nav-link {
             color: #bdc1c6;
         }
-        
+
         [data-bs-theme="dark"] .sidebar-nav .nav-link:hover {
             background-color: #2d3236;
             color: #6ea8fe;
         }
-        
+
         [data-bs-theme="dark"] .sidebar-nav .nav-link.active {
             background-color: #1e3a5f;
             color: #6ea8fe;
         }
-        
+
         [data-bs-theme="dark"] .sidebar-footer {
             border-top-color: #2d3236;
         }
-        
+
         [data-bs-theme="dark"] .user-info {
             background-color: #2d3236;
         }
-        
+
         [data-bs-theme="dark"] .user-name {
             color: #e8eaed;
         }
-        
+
         [data-bs-theme="dark"] .user-role {
             color: #8e9297;
         }
-        
+
         [data-bs-theme="dark"] .top-bar {
             background-color: #1a1d20;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        
+
         [data-bs-theme="dark"] .theme-toggle {
             color: #bdc1c6;
         }
-        
+
         [data-bs-theme="dark"] .theme-toggle:hover {
             color: #6ea8fe;
             background-color: #2d3236;
         }
-        
+
         [data-bs-theme="dark"] .main-content {
             background-color: #0d1117;
             color: #e8eaed;
@@ -245,7 +245,7 @@
                 {{-- <span>Control de Asistencia</span> --}}
             </a>
         </div>
-        
+
         <nav class="sidebar-nav">
             <ul class="nav flex-column">
                 {{-- Dashboard --}}
@@ -325,19 +325,19 @@
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Reportes</small>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.reportes.asistencias') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.reportes.asistencias') ? 'active' : '' }}" href="{{ route('admin.reportes.asistencias') }}">
                             <i class="bi bi-clipboard-data"></i>
                             Reporte de Asistencias
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.reportes.equipos') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.reportes.equipos') ? 'active' : '' }}" href="{{ route('admin.reportes.equipos') }}">
                             <i class="bi bi-bar-chart"></i>
                             Uso de Equipos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.reportes.aulas') ? 'active' : '' }}" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.reportes.aulas') ? 'active' : '' }}" href="{{ route('admin.reportes.aulas') }}">
                             <i class="bi bi-pie-chart"></i>
                             Ocupación de Aulas
                         </a>
@@ -362,7 +362,7 @@
                             Mi Horario
                         </a>
                     </li>
-                    
+
                     {{-- Asistencias --}}
                     <li class="nav-item mt-3">
                         <small class="text-muted text-uppercase px-3" style="font-size: 0.75rem;">Asistencias</small>
@@ -441,7 +441,7 @@
                 </li>
             </ul>
         </nav>
-        
+
         <div class="sidebar-footer">
             <div class="user-info">
                 <div class="user-avatar">
@@ -460,7 +460,7 @@
             </div>
         </div>
     </aside>
-    
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
@@ -479,7 +479,7 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- Content -->
         <div class="content-wrapper">
             @yield('contenido')

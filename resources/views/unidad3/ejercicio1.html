@@ -5,13 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
 <body>
     <h1>HOLA MUNDO</h1>
     <Button onclick="mostrarAlerta()">Dame click</Button>
+    <label for="numero">Número:</label>
+    <input type="text" id="numero" placeholder="Escribe un número" onchange="mostrarAlerta()">
+    <button onclick="cambiarFondoColor()">Cambiar color de fondo</button>
+    <div id="contenedor">
+
+    </div>
 </body>
 </html>
 <script>
 function mostrarAlerta() {
-    alert("Bienvenido a vue");
+    // div = document.getElementById("contenedor");
+    // div.innerHTML = "";
+    // for (var i = 1; i <= 5; i++) {
+    //     // alert("Hola Mundo " + i);
+    //     div.innerHTML += "<p>Hola Mundo " + i + "</p>";
+    // }
+    var numero = document.getElementById("numero").value;
+    div = document.getElementById("contenedor");
+    div.innerHTML = "";
+    div.style.backgroundColor = "lightyellow";
+    for (var i = 1; i <= numero; i++) {
+        div.innerHTML += "<p>Hola Mundo " + i + "</p>";
+    }
+}
+function cambiarFondoColor() {
+    document.body.style.backgroundColor = "lightgreen";
 }
 </script>

@@ -9,7 +9,7 @@
                 <h2 class="mb-4">Panel de Administración</h2>
             </div>
         </div>
-        
+
         {{-- Mensaje de error si no tiene permisos --}}
         @if(session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -101,7 +101,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="#" class="card text-decoration-none text-center">
+                <a href="{{ route('admin.equipos.index') }}" class="card text-decoration-none text-center">
                     <div class="card-body">
                         <i class="bi bi-pc-display fs-1 text-success mb-2"></i>
                         <p class="fw-semibold mb-0">Gestionar Equipos</p>
